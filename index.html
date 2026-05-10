@@ -1358,6 +1358,7 @@
     let successfulSwipes = 0;
     let dragX = 0;
     let dragY = 0;
+    let activePointerId = null;
     let lastPointerX = null;
     let lastPointerY = null;
     let idleTimer = null;
@@ -1788,6 +1789,7 @@
       isAnimating = false;
       dragX = 0;
       dragY = 0;
+      activePointerId = null;
       lastPointerX = null;
       lastPointerY = null;
       note.className = "banknote pop";
@@ -1798,6 +1800,7 @@
     function completeSlide() {
       isAnimating = true;
       clearTimeout(idleTimer);
+      activePointerId = null;
       lastPointerX = null;
       lastPointerY = null;
       successfulSwipes += 1;
@@ -1848,6 +1851,7 @@
 
     function snapBack() {
       clearTimeout(idleTimer);
+      activePointerId = null;
       lastPointerX = null;
       lastPointerY = null;
       note.classList.remove("dragging", "pop");
@@ -1882,14 +1886,43 @@
       return target.closest(".upgrades, .estate-panel, .slot-panel, .auto-toggle, .upgrades-toggle, .casino-toggle, .menu-toggle");
     }
 
-    stage.addEventListener("pointermove", (event) => {
-      if (isUiControlTarget(event.target)) return;
-      if (isAnimating) return;
-      if (lastPointerX === null || lastPointerY === null) {
-        lastPointerX = event.clientX;
-        lastPointerY = event.clientY;
-        return;
+    function isBillDragStart(event) {
+      if (!note.contains(event.target)) return false;
+      const noteRect = note.getBoundingClientRect();
+      const lowerBillStart = noteRect.top + noteRect.height * 0.48;
+      return event.clientY >= lowerBillStart;
+    }
+
+    function startBillDrag(event) {
+      if (isAnimating || isUiControlTarget(event.target) || !isBillDragStart(event)) return;
+      event.preventDefault();
+      activePointerId = event.pointerId;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      clearTimeout(idleTimer);
+      note.classList.remove("snap", "pop");
+      note.classList.add("dragging");
+      if (typeof note.setPointerCapture === "function") {
+        note.setPointerCapture(event.pointerId);
       }
+    }
+
+    function stopBillDrag(event) {
+      if (activePointerId !== event.pointerId) return;
+      if (typeof note.releasePointerCapture === "function" && note.hasPointerCapture(event.pointerId)) {
+        note.releasePointerCapture(event.pointerId);
+      }
+      activePointerId = null;
+      lastPointerX = null;
+      lastPointerY = null;
+      scheduleSnapBack();
+    }
+
+    note.addEventListener("pointerdown", startBillDrag);
+
+    stage.addEventListener("pointermove", (event) => {
+      if (isAnimating || activePointerId !== event.pointerId) return;
+      event.preventDefault();
       const deltaX = event.clientX - lastPointerX;
       const deltaY = event.clientY - lastPointerY;
       lastPointerX = event.clientX;
@@ -1897,11 +1930,9 @@
       applyMovement(deltaX, deltaY);
     });
 
-    stage.addEventListener("pointerleave", () => {
-      lastPointerX = null;
-      lastPointerY = null;
-      scheduleSnapBack();
-    });
+    stage.addEventListener("pointerup", stopBillDrag);
+    stage.addEventListener("pointercancel", stopBillDrag);
+    stage.addEventListener("lostpointercapture", stopBillDrag);
 
     stage.addEventListener("wheel", (event) => {
       if (isUiControlTarget(event.target)) return;
