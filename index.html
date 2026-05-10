@@ -21,6 +21,7 @@
       --gold-0: #f6b800;
       --gold-1: #ffcc33;
       --gold-2: #d89400;
+      --gold-soft: rgba(255, 199, 44, 0.35);
       --text-main: #ffffff;
       --text-soft: #d7d3ca;
       --text-muted: #8a8372;
@@ -36,6 +37,7 @@
       --controls-height: 82px;
       --controls-gap: 18px;
       --controls-top: calc(var(--footer-offset) + var(--controls-height) + var(--controls-gap));
+      --stats-height: 58px;
       --note-fly-duration: 520ms;
       --stream-fly-duration: 1200ms;
       --score-scale: 1;
@@ -81,11 +83,13 @@
       isolation: isolate;
       background:
         radial-gradient(circle at 50% 16%, rgba(255, 204, 51, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 48%, rgba(255, 204, 51, 0.13), transparent 32%),
         radial-gradient(circle at 50% 64%, rgba(255, 204, 51, 0.08), transparent 28%),
         radial-gradient(circle at 8% 14%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px),
         radial-gradient(circle at 92% 14%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px),
         linear-gradient(180deg, #060606 0%, #0b0b0d 52%, #080808 100%);
       background-size:
+        100% 100%,
         100% 100%,
         100% 100%,
         10px 10px,
@@ -113,7 +117,8 @@
     .stage::after {
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
-        linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent 14%);
+        linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent 14%),
+        radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
       z-index: 0;
     }
 
@@ -137,34 +142,49 @@
     /* Balance header */
     .score {
       position: relative;
-      width: clamp(282px, 81vw, 348px);
-      min-height: 84px;
-      border-radius: 999px;
+      width: clamp(292px, 84vw, 360px);
+      min-height: 92px;
+      border-radius: 30px;
       display: grid;
-      place-items: center;
+      align-content: center;
+      justify-items: center;
+      gap: 4px;
       overflow: hidden;
       pointer-events: none;
+      background:
+        linear-gradient(112deg, rgba(255, 255, 255, 0.12), transparent 18%, transparent 72%, rgba(255, 215, 92, 0.1)),
+        radial-gradient(circle at 50% -24%, rgba(255, 215, 92, 0.26), transparent 58%),
+        linear-gradient(180deg, rgba(24, 24, 24, 0.98) 0%, rgba(6, 6, 6, 0.99) 100%);
+      box-shadow:
+        var(--panel-inset),
+        0 18px 42px rgba(0, 0, 0, 0.58),
+        0 0 24px rgba(255, 199, 44, 0.18),
+        inset 0 -16px 24px rgba(0, 0, 0, 0.22);
     }
 
     .score::before,
     .score::after {
       content: "";
       position: absolute;
-      top: 17px;
-      bottom: 17px;
-      width: 62px;
-      opacity: 0.2;
-      background-image: radial-gradient(circle, rgba(255, 204, 51, 0.44) 0 1.1px, transparent 1.2px);
-      background-size: 10px 10px;
       pointer-events: none;
     }
 
     .score::before {
-      left: 18px;
+      inset: 1px;
+      border-radius: inherit;
+      background-image: radial-gradient(circle, rgba(255, 204, 51, 0.14) 0 1px, transparent 1.2px);
+      background-size: 12px 12px;
+      opacity: 0.42;
     }
 
     .score::after {
-      right: 18px;
+      top: -40%;
+      bottom: -40%;
+      left: -70%;
+      width: 54%;
+      background: linear-gradient(90deg, transparent, rgba(255, 244, 198, 0.18), transparent);
+      transform: rotate(18deg);
+      animation: card-shine 4.6s ease-in-out infinite;
     }
 
     .score-flare {
@@ -189,6 +209,17 @@
       gap: 8px;
       transform: scale(var(--score-scale));
       transform-origin: center;
+    }
+
+    .balance-caption {
+      position: relative;
+      z-index: 1;
+      color: var(--gold-1);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.92;
     }
 
     .score.bump .score-label {
@@ -220,13 +251,15 @@
     /* Level bar */
     .level-panel {
       position: relative;
-      width: clamp(304px, 85vw, 364px);
-      min-height: 58px;
-      border-radius: 18px;
+      width: clamp(292px, 84vw, 360px);
+      min-height: 68px;
+      border-radius: 22px;
       display: grid;
-      place-items: center;
+      align-content: center;
+      justify-items: center;
       text-align: center;
-      padding: 10px 18px 16px;
+      gap: 8px;
+      padding: 11px 18px 12px;
       overflow: hidden;
     }
 
@@ -241,22 +274,48 @@
       text-shadow: 0 0 10px rgba(255, 204, 51, 0.14);
     }
 
-    .xp-fill {
+    .xp-track {
       position: relative;
       z-index: 1;
-      align-self: end;
-      justify-self: stretch;
-      margin-top: auto;
+      width: 100%;
       height: 8px;
       border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.58);
+    }
+
+    .xp-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      height: 8px;
       border-radius: 999px;
       background:
         linear-gradient(180deg, #ffe07c 0%, #f6b800 48%, #d89400 100%);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.32),
-        0 0 14px rgba(246, 184, 0, 0.28);
+        0 0 16px rgba(246, 184, 0, 0.42);
       transition: width 280ms cubic-bezier(0.22, 0.9, 0.25, 1);
       width: 0;
+      overflow: hidden;
+    }
+
+    .xp-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+      transform: translateX(-120%);
+      animation: progress-shine 2.6s ease-in-out infinite;
+    }
+
+    .xp-progress-text {
+      position: relative;
+      z-index: 1;
+      color: var(--text-soft);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
     }
 
     /* Decorative silhouettes */
@@ -308,18 +367,35 @@
       height: 74px;
     }
 
+    .decor-coin {
+      left: 20px;
+      bottom: 172px;
+      width: 58px;
+      height: 58px;
+      color: rgba(255, 214, 102, 0.07);
+    }
+
+    .decor-trophy {
+      right: 25px;
+      bottom: 168px;
+      width: 62px;
+      height: 62px;
+      color: rgba(255, 214, 102, 0.065);
+    }
+
     /* Central bill stage */
     .bill-stage {
       position: absolute;
       left: 50%;
-      top: clamp(166px, 22vh, 188px);
-      bottom: calc(var(--controls-top) + 28px);
+      top: clamp(202px, 26vh, 226px);
+      bottom: calc(var(--controls-top) + var(--stats-height) + 26px);
       transform: translateX(-50%);
       z-index: 4;
       width: clamp(306px, 86vw, 376px);
       border-radius: 30px;
       padding: 18px;
       overflow: hidden;
+      animation: bill-frame-pulse 3.8s ease-in-out infinite;
     }
 
     .bill-stage::before,
@@ -350,13 +426,45 @@
       height: 100%;
       border-radius: 22px;
       background:
+        radial-gradient(circle at 50% 50%, rgba(255, 204, 51, 0.1) 0 2px, transparent 2.4px),
+        radial-gradient(circle at 30% 32%, rgba(255, 204, 51, 0.08), transparent 22%),
+        radial-gradient(circle at 70% 74%, rgba(255, 204, 51, 0.08), transparent 20%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
         radial-gradient(circle at 50% 14%, rgba(255, 204, 51, 0.08), transparent 18%),
         linear-gradient(180deg, rgba(16, 16, 18, 0.98) 0%, rgba(8, 8, 10, 1) 100%);
+      background-size:
+        34px 34px,
+        auto,
+        auto,
+        auto,
+        auto,
+        auto;
       box-shadow:
         inset 0 0 0 1px rgba(255, 204, 51, 0.08),
-        inset 0 20px 38px rgba(255, 255, 255, 0.02);
+        inset 0 20px 38px rgba(255, 255, 255, 0.02),
+        inset 18px 0 34px rgba(255, 204, 51, 0.04),
+        inset -18px 0 34px rgba(255, 204, 51, 0.04);
       overflow: hidden;
+    }
+
+    .bill-stage-inner::before,
+    .bill-stage-inner::after {
+      content: "";
+      position: absolute;
+      top: 15%;
+      bottom: 15%;
+      width: 1px;
+      z-index: 2;
+      background: linear-gradient(180deg, transparent, rgba(255, 204, 51, 0.22), transparent);
+      pointer-events: none;
+    }
+
+    .bill-stage-inner::before {
+      left: 18px;
+    }
+
+    .bill-stage-inner::after {
+      right: 18px;
     }
 
     .playfield {
@@ -404,6 +512,7 @@
       box-shadow:
         0 16px 28px rgba(0, 0, 0, 0.38),
         0 0 20px rgba(255, 204, 51, 0.12);
+      filter: drop-shadow(0 0 12px rgba(255, 204, 51, 0.12));
       transform: translate3d(-50%, 0, 0) rotate(0deg) scale(1);
       will-change: transform, opacity;
     }
@@ -423,6 +532,120 @@
     .banknote.fly {
       animation: note-fly var(--note-fly-duration) ease-in forwards;
       pointer-events: none;
+    }
+
+    .bill-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      z-index: 5;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255, 204, 51, 0.34);
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: rgba(5, 5, 5, 0.62);
+      color: rgba(255, 238, 179, 0.86);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      animation: hint-fade 5.5s ease-out forwards;
+    }
+
+    .tap-float {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      z-index: 20;
+      transform: translate(-50%, -50%);
+      color: #ffe680;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.01em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.72), 0 0 16px rgba(255, 204, 51, 0.32);
+      pointer-events: none;
+      animation: tap-float 900ms ease-out forwards;
+    }
+
+    .coin-spark {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      z-index: 19;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff6bf 0%, #ffcc33 42%, #d89400 100%);
+      box-shadow: 0 0 10px rgba(255, 204, 51, 0.6);
+      pointer-events: none;
+      animation: coin-spark 720ms ease-out forwards;
+    }
+
+    .stats-strip {
+      position: absolute;
+      left: 50%;
+      bottom: calc(var(--controls-top) + 12px);
+      z-index: 13;
+      width: min(calc(100% - 28px), 396px);
+      min-height: var(--stats-height);
+      transform: translateX(-50%);
+      border-radius: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: center;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .stat-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      padding: 10px 9px;
+    }
+
+    .stat-item + .stat-item {
+      border-left: 1px solid rgba(255, 204, 51, 0.2);
+    }
+
+    .stat-icon {
+      display: grid;
+      place-items: center;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      color: var(--gold-1);
+      background: rgba(255, 204, 51, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(255, 204, 51, 0.2);
+    }
+
+    .stat-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 3px;
+      color: var(--gold-1);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .bill-art,
@@ -464,11 +687,21 @@
       left: 50%;
       bottom: var(--footer-offset);
       transform: translateX(-50%);
-      width: min(calc(100% - 36px), 392px);
+      width: min(calc(100% - 24px), 404px);
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: clamp(10px, 2.4vw, 16px);
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(255, 204, 51, 0.34);
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 44%),
+        linear-gradient(180deg, rgba(17, 17, 17, 0.94) 0%, rgba(4, 4, 4, 0.96) 100%);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.6),
+        0 0 22px rgba(255, 204, 51, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
       pointer-events: auto;
     }
 
@@ -476,17 +709,19 @@
     .control-button {
       position: relative;
       flex: 0 0 auto;
-      width: 82px;
-      height: 82px;
-      border-radius: 24px;
+      width: clamp(72px, 20vw, 88px);
+      height: 76px;
+      border-radius: 22px;
       color: var(--text-main);
+      border-color: rgba(255, 204, 51, 0.44);
+      transition: transform 120ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
     .control-card {
-      padding: 12px 10px 10px;
+      padding: 9px 8px 8px;
       display: grid;
       justify-items: center;
-      gap: 8px;
+      gap: 5px;
       text-align: center;
       font-weight: 700;
       font-size: 13px;
@@ -500,9 +735,34 @@
       cursor: pointer;
     }
 
+    .control-button:focus,
+    .control-card:focus,
+    .upgrade-tab:focus,
+    .estate-card:focus,
+    .slot-close:focus,
+    .slot-bet-option:focus,
+    .slot-spin:focus {
+      outline: none;
+    }
+
+    .control-button:focus-visible,
+    .control-card:focus-visible,
+    .upgrade-tab:focus-visible,
+    .estate-card:focus-visible,
+    .slot-close:focus-visible,
+    .slot-bet-option:focus-visible,
+    .slot-spin:focus-visible {
+      outline: 2px solid rgba(255, 231, 130, 0.9);
+      outline-offset: 3px;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 0 4px rgba(255, 204, 51, 0.12),
+        0 0 22px rgba(255, 204, 51, 0.22);
+    }
+
     .control-button:active,
     .control-card:active {
-      transform: translateY(1px) scale(0.985);
+      transform: translateY(1px) scale(0.96);
     }
 
     .casino-toggle {
@@ -532,11 +792,54 @@
     }
 
     .upgrades-toggle[aria-expanded="true"],
-    .menu-toggle[aria-expanded="true"] {
+    .menu-toggle[aria-expanded="true"],
+    .casino-toggle[aria-expanded="true"],
+    .auto-toggle[aria-pressed="true"] {
+      border-color: rgba(255, 204, 51, 0.9);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
         0 26px 60px rgba(0, 0, 0, 0.62),
         0 0 24px rgba(246, 184, 0, 0.26);
+    }
+
+    .upgrades-toggle[aria-expanded="true"]::after,
+    .menu-toggle[aria-expanded="true"]::after,
+    .casino-toggle[aria-expanded="true"]::after,
+    .auto-toggle[aria-pressed="true"]::after {
+      content: "";
+      position: absolute;
+      left: 22%;
+      right: 22%;
+      bottom: 6px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--gold-1);
+      box-shadow: 0 0 10px rgba(255, 204, 51, 0.5);
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: -6px;
+      right: -4px;
+      z-index: 2;
+      display: none;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      place-items: center;
+      padding: 0 6px;
+      background: linear-gradient(180deg, #ffe782 0%, #ffc72c 48%, #d89400 100%);
+      color: #140f03;
+      border: 1px solid rgba(255, 247, 200, 0.72);
+      box-shadow: 0 0 14px rgba(255, 204, 51, 0.34);
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1;
+      animation: badge-pulse 1.9s ease-in-out infinite;
+    }
+
+    .nav-badge.visible {
+      display: grid;
     }
 
     .upgrades-icon {
@@ -555,7 +858,7 @@
 
     .auto-title {
       color: var(--text-main);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -565,7 +868,7 @@
       height: 24px;
       border-radius: 999px;
       background: #353535;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 204, 51, 0.14);
     }
 
     .auto-switch::after {
@@ -583,6 +886,9 @@
 
     .auto-toggle[aria-pressed="true"] .auto-switch {
       background: linear-gradient(180deg, rgba(246, 184, 0, 0.84) 0%, rgba(216, 148, 0, 0.95) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.24),
+        0 0 16px rgba(255, 204, 51, 0.35);
     }
 
     .auto-toggle[aria-pressed="true"] .auto-switch::after {
@@ -592,7 +898,7 @@
 
     .auto-state {
       color: var(--text-muted);
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
@@ -668,6 +974,52 @@
 
     .upgrade-tab:last-child {
       grid-column: 1 / -1;
+    }
+
+    .prestige-tab {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border-color: transparent;
+    }
+
+    .prestige-tab::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      z-index: -2;
+      border-radius: inherit;
+      background: conic-gradient(
+        from var(--prestige-angle, 0deg),
+        #ff004c,
+        #ffb300,
+        #fff45c,
+        #36ff7a,
+        #2fd5ff,
+        #745cff,
+        #ff4ff3,
+        #ff004c
+      );
+      animation: prestige-border-spin 2.4s linear infinite;
+    }
+
+    .prestige-tab::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      z-index: -1;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 45%),
+        linear-gradient(180deg, rgba(18, 18, 20, 0.98) 0%, rgba(5, 5, 7, 0.98) 100%);
+    }
+
+    .prestige-tab:not(:disabled) {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 14px 26px rgba(0, 0, 0, 0.34),
+        0 0 20px rgba(255, 204, 51, 0.18),
+        0 0 20px rgba(112, 92, 255, 0.16);
     }
 
     .upgrade-tab > * {
@@ -1058,10 +1410,68 @@
       100% { box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 18px rgba(246, 184, 0, 0.12); }
     }
 
+    @keyframes card-shine {
+      0%, 46% { transform: translateX(0) rotate(18deg); opacity: 0; }
+      54% { opacity: 1; }
+      78%, 100% { transform: translateX(360%) rotate(18deg); opacity: 0; }
+    }
+
     @keyframes text-bump {
       0% { transform: scale(var(--score-scale)); }
       45% { transform: scale(var(--score-bump-scale)); }
       100% { transform: scale(var(--score-scale)); }
+    }
+
+    @keyframes progress-shine {
+      0%, 34% { transform: translateX(-120%); opacity: 0; }
+      48% { opacity: 0.9; }
+      76%, 100% { transform: translateX(130%); opacity: 0; }
+    }
+
+    @keyframes bill-frame-pulse {
+      0%, 100% {
+        box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 16px rgba(255, 204, 51, 0.13);
+      }
+      50% {
+        box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 26px rgba(255, 204, 51, 0.24);
+      }
+    }
+
+    @keyframes hint-fade {
+      0%, 68% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(6px); }
+    }
+
+    @keyframes tap-float {
+      0% { opacity: 0; transform: translate(-50%, -34%) scale(0.86); }
+      15% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+      100% { opacity: 0; transform: translate(-50%, -146%) scale(0.92); }
+    }
+
+    @keyframes coin-spark {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.35);
+      }
+    }
+
+    @keyframes badge-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 204, 51, 0.24); }
+      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 204, 51, 0.42); }
+    }
+
+    @property --prestige-angle {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @keyframes prestige-border-spin {
+      to { --prestige-angle: 360deg; }
     }
 
     @keyframes slot-pop {
@@ -1140,15 +1550,16 @@
 
     @media (max-width: 390px) {
       .bill-stage {
-        top: 168px;
+        top: 198px;
         width: calc(100vw - 26px);
-        height: min(50vh, 446px);
+        bottom: calc(var(--controls-top) + var(--stats-height) + 22px);
       }
 
       .control-card,
       .control-button {
-        width: 76px;
-        height: 76px;
+        width: clamp(68px, 20vw, 76px);
+        height: 72px;
+        font-size: 12px;
       }
 
       .controls-row {
@@ -1158,8 +1569,21 @@
     }
 
     @media (max-height: 760px) {
+      .hud {
+        gap: 8px;
+      }
+
+      .score {
+        min-height: 78px;
+      }
+
+      .level-panel {
+        min-height: 58px;
+      }
+
       .bill-stage {
-        bottom: calc(var(--controls-top) + 20px);
+        top: 190px;
+        bottom: calc(var(--controls-top) + var(--stats-height) + 18px);
       }
     }
 
@@ -1207,12 +1631,28 @@
           <path d="M32 8v18M32 38v18M8 32h18M38 32h18M15 15l13 13M36 36l13 13M49 15L36 28M28 36L15 49"></path>
         </svg>
       </div>
+      <div class="decor-icon decor-coin">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+          <circle cx="32" cy="32" r="22"></circle>
+          <circle cx="32" cy="32" r="14"></circle>
+          <path d="M38 22c-9-4-17 0-17 10s8 14 17 10"></path>
+          <path d="M18 29h20M18 35h18"></path>
+        </svg>
+      </div>
+      <div class="decor-icon decor-trophy">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+          <path d="M22 12h20v9c0 11-5 18-10 18s-10-7-10-18v-9z"></path>
+          <path d="M22 18H12c0 10 4 16 12 18M42 18h10c0 10-4 16-12 18"></path>
+          <path d="M32 39v9M24 52h16M20 58h24"></path>
+        </svg>
+      </div>
     </div>
 
     <!-- Top HUD -->
     <header class="hud">
       <div class="score panel-surface" aria-live="polite" aria-label="0 euro">
         <span class="score-flare" aria-hidden="true"></span>
+        <span class="balance-caption">Balance</span>
         <span class="score-label">
           <span class="amount" id="slides">0</span>
           <span class="currency">euro</span>
@@ -1221,7 +1661,10 @@
 
       <div class="level-panel panel-surface">
         <span class="level-text" id="level">Level 0</span>
-        <span class="xp-fill"></span>
+        <span class="xp-track" aria-hidden="true">
+          <span class="xp-fill"></span>
+        </span>
+        <span class="xp-progress-text" id="xp-progress">0 / 20 XP</span>
       </div>
     </header>
 
@@ -1250,6 +1693,48 @@
             <img class="bill-art" alt="Euro bill">
           </div>
         </section>
+        <span class="bill-hint">Swipe to earn</span>
+      </div>
+    </section>
+
+    <section class="stats-strip panel-surface" aria-label="Idle game stats">
+      <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="9" cy="12" r="5"></circle>
+            <path d="M13 8c3.5.2 6 2 6 5s-2.5 4.8-6 5"></path>
+          </svg>
+        </span>
+        <span>
+          <span class="stat-label">Earn / Tap</span>
+          <span class="stat-value" data-stat="tap">€1.00</span>
+        </span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M4 15a8 8 0 0 1 16 0"></path>
+            <path d="M12 15l4-5"></path>
+            <path d="M6 19h12"></path>
+          </svg>
+        </span>
+        <span>
+          <span class="stat-label">Idle / Sec</span>
+          <span class="stat-value" data-stat="idle">€0.00</span>
+        </span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M4 18h16"></path>
+            <path d="M6 15l4-4 3 3 5-7"></path>
+            <path d="M15 7h3v3"></path>
+          </svg>
+        </span>
+        <span>
+          <span class="stat-label">Prestige</span>
+          <span class="stat-value" data-stat="prestige">x1.00</span>
+        </span>
       </div>
     </section>
 
@@ -1263,6 +1748,7 @@
         </button>
 
         <button class="control-button menu-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open upgrades">
+          <span class="nav-badge" data-badge="upgrades">0</span>
           <svg class="upgrades-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
             <path d="M32 10l4 9 10 2-7 7 2 10-9-5-9 5 2-10-7-7 10-2 4-9z"></path>
             <circle cx="32" cy="32" r="5"></circle>
@@ -1271,16 +1757,18 @@
         </button>
 
         <button class="control-button upgrades-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open real estate">
+          <span class="nav-badge" data-badge="estate">0</span>
           <svg class="estate-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
             <path d="M12 50h40"></path>
             <path d="M18 50V28l14-10 14 10v22"></path>
             <path d="M24 50V36h16v14"></path>
-            <path d="M22 22h20"></path>
+          <path d="M22 22h20"></path>
           </svg>
-          <span>Real Estate</span>
+          <span>Estate</span>
         </button>
 
         <button class="control-button casino-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open casino">
+          <span class="nav-badge visible" data-badge="casino">NEW</span>
           <svg class="casino-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
             <circle cx="32" cy="32" r="23"></circle>
             <circle cx="32" cy="32" r="14"></circle>
@@ -1304,10 +1792,10 @@
         <span class="upgrade-level">Level <span data-level="count">0</span>/50</span>
         <span class="upgrade-cost" data-cost="count">10 euro</span>
       </button>
-      <button class="upgrade-tab" type="button" data-upgrade="lucky">
-        <span class="upgrade-name">Lucky</span>
-        <span class="upgrade-level">Level <span data-level="lucky">0</span>/50</span>
-        <span class="upgrade-cost" data-cost="lucky">25 euro</span>
+      <button class="upgrade-tab prestige-tab" type="button" data-upgrade="prestige">
+        <span class="upgrade-name">Prestige</span>
+        <span class="upgrade-level">Bonus <span data-level="prestige">x1.00</span></span>
+        <span class="upgrade-cost" data-cost="prestige">Level 20</span>
       </button>
     </nav>
 
@@ -1369,6 +1857,13 @@
     const scoreLabel = document.querySelector(".score-label");
     const slidesValue = document.querySelector("#slides");
     const levelValue = document.querySelector("#level");
+    const xpProgressValue = document.querySelector("#xp-progress");
+    const tapStatValue = document.querySelector("[data-stat='tap']");
+    const idleStatValue = document.querySelector("[data-stat='idle']");
+    const prestigeStatValue = document.querySelector("[data-stat='prestige']");
+    const upgradeBadge = document.querySelector("[data-badge='upgrades']");
+    const estateBadge = document.querySelector("[data-badge='estate']");
+    const casinoBadge = document.querySelector("[data-badge='casino']");
     const upgradeButtons = document.querySelectorAll("[data-upgrade]");
     const levelValues = document.querySelectorAll("[data-level]");
     const costValues = document.querySelectorAll("[data-cost]");
@@ -1390,24 +1885,25 @@
     const slotSpin = document.querySelector(".slot-spin");
     const slotResult = document.querySelector(".slot-result");
     const maxUpgradeLevel = 50;
+    const maxPrestigeLevel = 5;
+    const prestigeLevelRequirement = 20;
     const saveStorageKey = "euro-slide-casino-save";
     const persistence = window.GamePersistence;
     const slotSymbols = ["🍒", "jackpot", "⭐", "🍀", "🔥", "💰", "⚡", "🍋"];
     const upgradeBaseCosts = {
       speed: 5,
       count: 10,
-      lucky: 25,
       mart: 50
     };
     const upgradeLevels = {
       speed: 0,
       count: 0,
-      lucky: 0,
       mart: 0
     };
 
     let slides = 56;
     let playerLevel = 0;
+    let prestigeLevel = 0;
     let swipeExp = 0;
     let successfulSwipes = 0;
     let dragX = 0;
@@ -1430,6 +1926,8 @@
     let slotSpinning = false;
     let selectedSlotBet = 100;
     let lastTouchEndAt = 0;
+    let displayedSlides = 0;
+    let balanceAnimationFrame = null;
 
     loadSavedProgress();
 
@@ -1443,6 +1941,7 @@
         playerLevel,
         swipeExp,
         successfulSwipes,
+        prestigeLevel,
         upgradeLevels: { ...upgradeLevels }
       };
     }
@@ -1459,7 +1958,10 @@
       playerLevel = saved.playerLevel;
       swipeExp = saved.swipeExp;
       successfulSwipes = saved.successfulSwipes;
-      Object.assign(upgradeLevels, saved.upgradeLevels);
+      prestigeLevel = saved.prestigeLevel || 0;
+      Object.keys(upgradeLevels).forEach((type) => {
+        upgradeLevels[type] = saved.upgradeLevels[type] || 0;
+      });
     }
 
     function slideThreshold() {
@@ -1476,10 +1978,11 @@
 
     function setNoteTransform(x, y) {
       const rotation = Math.max(-10, Math.min(10, x / 18));
+      const pressScale = note.classList.contains("pressed") ? 0.985 : 1;
       note.style.setProperty("--drag-x", `${x}px`);
       note.style.setProperty("--drag-y", `${y}px`);
       note.style.setProperty("--drag-r", `${rotation}deg`);
-      note.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, 0) rotate(${rotation}deg) scale(1)`;
+      note.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, 0) rotate(${rotation}deg) scale(${pressScale})`;
     }
 
     function bumpCounter() {
@@ -1489,14 +1992,89 @@
     }
 
     function getSwipeReward() {
-      return 1 + upgradeLevels.count;
+      return (1 + upgradeLevels.count) * getPrestigeMultiplier();
+    }
+
+    function getPrestigeMultiplier() {
+      return 1 + prestigeLevel * 0.25;
+    }
+
+    function formatMultiplier(value) {
+      return `x${value.toFixed(2)}`;
+    }
+
+    function formatProgressNumber(value) {
+      return Number.isInteger(value) ? String(value) : value.toFixed(2);
+    }
+
+    function formatStatEuro(amount) {
+      return `€${amount.toFixed(2)}`;
+    }
+
+    function renderBalanceValue(value) {
+      slidesValue.textContent = Math.max(0, value).toLocaleString("en-US", {
+        maximumFractionDigits: 2
+      });
+    }
+
+    function animateBalanceTo(target) {
+      const start = displayedSlides;
+      const end = Math.max(0, target);
+      const distance = Math.abs(end - start);
+      cancelAnimationFrame(balanceAnimationFrame);
+      if (distance < 1) {
+        displayedSlides = end;
+        renderBalanceValue(end);
+        return;
+      }
+
+      const duration = Math.min(720, Math.max(220, distance * 12));
+      const startedAt = performance.now();
+      const tick = (now) => {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        displayedSlides = start + (end - start) * eased;
+        renderBalanceValue(displayedSlides);
+        if (progress < 1) {
+          balanceAnimationFrame = requestAnimationFrame(tick);
+        } else {
+          displayedSlides = end;
+          renderBalanceValue(end);
+        }
+      };
+      balanceAnimationFrame = requestAnimationFrame(tick);
+    }
+
+    function updateStatsStrip() {
+      tapStatValue.textContent = formatStatEuro(getSwipeReward());
+      idleStatValue.textContent = formatStatEuro(upgradeLevels.mart * getPrestigeMultiplier());
+      prestigeStatValue.textContent = formatMultiplier(getPrestigeMultiplier());
+    }
+
+    function setBadge(badge, value) {
+      if (!badge) return;
+      const visible = Boolean(value);
+      badge.classList.toggle("visible", visible);
+      if (visible) badge.textContent = value;
+    }
+
+    function updateNavBadges() {
+      const upgradeTypes = ["speed", "count"];
+      const affordableUpgrades = upgradeTypes.filter((type) => (
+        upgradeLevels[type] < maxUpgradeLevel && slides >= getUpgradeCost(type)
+      )).length;
+      const prestigeAvailable = canPrestige() ? 1 : 0;
+      const martAvailable = upgradeLevels.mart < maxUpgradeLevel && slides >= getUpgradeCost("mart");
+      setBadge(upgradeBadge, affordableUpgrades + prestigeAvailable || "");
+      setBadge(estateBadge, martAvailable ? "1" : "");
+      setBadge(casinoBadge, slides >= 100 ? "NEW" : "");
     }
 
     function updateScore() {
-      const label = slides.toLocaleString("en-US");
+      const label = slides.toLocaleString("en-US", { maximumFractionDigits: 2 });
       const digits = label.length;
       const scale = Math.max(0.72, 1 - Math.max(0, digits - 4) * 0.05);
-      slidesValue.textContent = label;
+      animateBalanceTo(slides);
       scoreLabel.style.setProperty("--score-scale", scale.toFixed(2));
       scoreLabel.style.setProperty("--score-bump-scale", (scale * 1.04).toFixed(2));
       scoreBox.style.setProperty("--score-scale", scale.toFixed(2));
@@ -1505,6 +2083,7 @@
       bumpCounter();
       renderUpgradeLevels();
       updateSlotControls();
+      updateStatsStrip();
     }
 
     function getExpNeeded() {
@@ -1515,8 +2094,9 @@
       const needed = getExpNeeded();
       const progress = Math.max(0, Math.min(1, swipeExp / needed));
       levelValue.textContent = `Level ${playerLevel}`;
-      levelValue.setAttribute("aria-label", `Level ${playerLevel}, ${swipeExp} of ${needed} experience`);
+      levelValue.setAttribute("aria-label", `Level ${playerLevel}, ${formatProgressNumber(swipeExp)} of ${needed} experience`);
       xpFill.style.width = `${progress * 100}%`;
+      xpProgressValue.textContent = `${formatProgressNumber(swipeExp)} / ${needed} XP · ${Math.round(progress * 100)}%`;
       saveProgress();
     }
 
@@ -1678,14 +2258,7 @@
       if (elapsedSeconds <= 0) return;
       lastPassiveIncomeAt += elapsedSeconds * 1000;
       if (upgradeLevels.mart <= 0) return;
-      addEuros(upgradeLevels.mart * elapsedSeconds);
-    }
-
-    function getLuckyBonus() {
-      if (upgradeLevels.lucky === 0 || successfulSwipes % 100 !== 0) return 0;
-      const min = upgradeLevels.lucky * 10;
-      const max = upgradeLevels.lucky * 50;
-      return Math.floor(min + Math.random() * (max - min + 1));
+      addEuros(upgradeLevels.mart * elapsedSeconds * getPrestigeMultiplier());
     }
 
     function getSpeedMultiplier() {
@@ -1705,6 +2278,10 @@
       if (upgradeLevels[type] >= maxUpgradeLevel) return 0;
       const nextLevel = upgradeLevels[type] + 1;
       return upgradeBaseCosts[type] * nextLevel * nextLevel;
+    }
+
+    function canPrestige() {
+      return prestigeLevel < maxPrestigeLevel && playerLevel >= prestigeLevelRequirement;
     }
 
     function applyUpgradeEffects() {
@@ -1727,15 +2304,34 @@
     function renderUpgradeLevels() {
       levelValues.forEach((value) => {
         const type = value.dataset.level;
-        value.textContent = upgradeLevels[type];
+        value.textContent = type === "prestige"
+          ? formatMultiplier(getPrestigeMultiplier())
+          : upgradeLevels[type];
       });
       costValues.forEach((value) => {
         const type = value.dataset.cost;
+        if (type === "prestige") {
+          value.textContent = prestigeLevel >= maxPrestigeLevel
+            ? "Max"
+            : `Level ${prestigeLevelRequirement} · ${prestigeLevel}/${maxPrestigeLevel}`;
+          return;
+        }
         const isMaxed = upgradeLevels[type] >= maxUpgradeLevel;
         value.textContent = isMaxed ? "Max" : `${getUpgradeCost(type)} euro`;
       });
       upgradeButtons.forEach((button) => {
         const type = button.dataset.upgrade;
+        if (type === "prestige") {
+          const isMaxed = prestigeLevel >= maxPrestigeLevel;
+          button.disabled = isMaxed || !canPrestige();
+          button.setAttribute(
+            "aria-label",
+            isMaxed
+              ? `Prestige maximum ${maxPrestigeLevel} of ${maxPrestigeLevel}, bonus ${formatMultiplier(getPrestigeMultiplier())}`
+              : `Prestige ${prestigeLevel} of ${maxPrestigeLevel}, requires level ${prestigeLevelRequirement}, bonus ${formatMultiplier(getPrestigeMultiplier())}`
+          );
+          return;
+        }
         const isMaxed = upgradeLevels[type] >= maxUpgradeLevel;
         const cost = getUpgradeCost(type);
         const isAffordable = slides >= cost;
@@ -1747,9 +2343,15 @@
             : `${type} upgrade level ${upgradeLevels[type]} of ${maxUpgradeLevel}, costs ${cost} euro`
         );
       });
+      updateStatsStrip();
+      updateNavBadges();
     }
 
     function upgrade(type) {
+      if (type === "prestige") {
+        prestige();
+        return;
+      }
       if (!Object.prototype.hasOwnProperty.call(upgradeLevels, type)) return;
       if (upgradeLevels[type] >= maxUpgradeLevel) return;
       const cost = getUpgradeCost(type);
@@ -1758,6 +2360,25 @@
       upgradeLevels[type] += 1;
       if (type === "mart") renderEstateLine();
       applyUpgradeEffects();
+      saveProgress();
+    }
+
+    function prestige() {
+      if (!canPrestige()) return;
+      prestigeLevel += 1;
+      slides = 0;
+      playerLevel = 0;
+      swipeExp = 0;
+      successfulSwipes = 0;
+      upgradeLevels.mart = 0;
+      lastPassiveIncomeAt = Date.now();
+      if (streamMode) stopMoneyStream();
+      respawnNote();
+      renderEstateLine();
+      updateExpBar();
+      applyUpgradeEffects();
+      updateScore();
+      launchGoldenFireworks();
       saveProgress();
     }
 
@@ -1811,6 +2432,33 @@
       emitFireworks({ golden: true });
     }
 
+    function emitTapReward(amount) {
+      const stageRect = stage.getBoundingClientRect();
+      const noteRect = note.getBoundingClientRect();
+      const x = noteRect.left + noteRect.width / 2 - stageRect.left;
+      const y = noteRect.top + noteRect.height * 0.35 - stageRect.top;
+      const label = document.createElement("span");
+      label.className = "tap-float";
+      label.textContent = `+${formatStatEuro(amount)}`;
+      label.style.setProperty("--x", `${x}px`);
+      label.style.setProperty("--y", `${y}px`);
+      stage.appendChild(label);
+      label.addEventListener("animationend", () => label.remove(), { once: true });
+
+      for (let index = 0; index < 7; index += 1) {
+        const spark = document.createElement("i");
+        const angle = (Math.PI * 2 * index) / 7;
+        const distance = 24 + Math.random() * 30;
+        spark.className = "coin-spark";
+        spark.style.setProperty("--x", `${x}px`);
+        spark.style.setProperty("--y", `${y}px`);
+        spark.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+        spark.style.setProperty("--dy", `${Math.sin(angle) * distance - 20}px`);
+        stage.appendChild(spark);
+        spark.addEventListener("animationend", () => spark.remove(), { once: true });
+      }
+    }
+
     function createStreamNote() {
       const streamNote = document.createElement("div");
       const streamImage = document.createElement("img");
@@ -1829,7 +2477,7 @@
 
     function streamTick() {
       createStreamNote();
-      addEuros(1);
+      addEuros(getPrestigeMultiplier());
     }
 
     function startMoneyStream() {
@@ -1868,12 +2516,11 @@
       lastPointerY = null;
       successfulSwipes += 1;
       const swipeReward = getSwipeReward();
+      emitTapReward(swipeReward);
       addEuros(swipeReward);
       addSwipeExp(swipeReward);
-      const luckyBonus = getLuckyBonus();
-      if (luckyBonus > 0) addEuros(luckyBonus);
       if (successfulSwipes > 5) startMoneyStream();
-      note.classList.remove("dragging", "snap", "pop");
+      note.classList.remove("dragging", "snap", "pop", "pressed");
       note.classList.add("fly");
       note.addEventListener("animationend", respawnNote, { once: true });
     }
@@ -1917,7 +2564,7 @@
       activePointerId = null;
       lastPointerX = null;
       lastPointerY = null;
-      note.classList.remove("dragging", "pop");
+      note.classList.remove("dragging", "pop", "pressed");
       note.classList.add("snap");
       dragX = 0;
       dragY = 0;
@@ -1964,8 +2611,8 @@
       const drawerButtons = upgradesMenu.querySelectorAll("[data-upgrade]");
       for (const button of drawerButtons) {
         const rect = button.getBoundingClientRect();
-        const left = button.dataset.upgrade === "lucky" ? panelRect.left : rect.left;
-        const right = button.dataset.upgrade === "lucky" ? panelRect.right : rect.right;
+        const left = button.dataset.upgrade === "prestige" ? panelRect.left : rect.left;
+        const right = button.dataset.upgrade === "prestige" ? panelRect.right : rect.right;
         if (
           event.clientX >= left
           && event.clientX <= right
@@ -1994,7 +2641,8 @@
       lastPointerY = event.clientY;
       clearTimeout(idleTimer);
       note.classList.remove("snap", "pop");
-      note.classList.add("dragging");
+      note.classList.add("dragging", "pressed");
+      setNoteTransform(dragX, dragY);
       if (typeof note.setPointerCapture === "function") {
         note.setPointerCapture(event.pointerId);
       }
@@ -2008,6 +2656,8 @@
       activePointerId = null;
       lastPointerX = null;
       lastPointerY = null;
+      note.classList.remove("pressed");
+      setNoteTransform(dragX, dragY);
       scheduleSnapBack();
     }
 

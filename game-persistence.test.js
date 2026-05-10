@@ -12,10 +12,10 @@ test("sanitizeGameState keeps valid saved values", () => {
     playerLevel: 7,
     swipeExp: 13,
     successfulSwipes: 91,
+    prestigeLevel: 3,
     upgradeLevels: {
       speed: 2,
       count: 4,
-      lucky: 1,
       mart: 5
     }
   });
@@ -25,10 +25,10 @@ test("sanitizeGameState keeps valid saved values", () => {
     playerLevel: 7,
     swipeExp: 13,
     successfulSwipes: 91,
+    prestigeLevel: 3,
     upgradeLevels: {
       speed: 2,
       count: 4,
-      lucky: 1,
       mart: 5
     }
   });
@@ -40,10 +40,10 @@ test("sanitizeGameState falls back for invalid values", () => {
     playerLevel: "oops",
     swipeExp: Infinity,
     successfulSwipes: null,
+    prestigeLevel: 999,
     upgradeLevels: {
       speed: 88,
       count: -3,
-      lucky: "x",
       mart: 6.8
     }
   });
@@ -53,10 +53,10 @@ test("sanitizeGameState falls back for invalid values", () => {
     playerLevel: 0,
     swipeExp: 0,
     successfulSwipes: 0,
+    prestigeLevel: 5,
     upgradeLevels: {
       speed: 50,
       count: 0,
-      lucky: 0,
       mart: 6
     }
   });
@@ -68,10 +68,10 @@ test("serializeGameState wraps a versioned payload", () => {
     playerLevel: 3,
     swipeExp: 19,
     successfulSwipes: 22,
+    prestigeLevel: 2,
     upgradeLevels: {
       speed: 1,
       count: 2,
-      lucky: 3,
       mart: 4
     }
   });
@@ -84,10 +84,10 @@ test("serializeGameState wraps a versioned payload", () => {
       playerLevel: 3,
       swipeExp: 19,
       successfulSwipes: 22,
+      prestigeLevel: 2,
       upgradeLevels: {
         speed: 1,
         count: 2,
-        lucky: 3,
         mart: 4
       }
     }

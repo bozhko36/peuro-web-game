@@ -1,14 +1,15 @@
 const SAVE_VERSION = 1;
 const MAX_UPGRADE_LEVEL = 50;
+const MAX_PRESTIGE_LEVEL = 5;
 const DEFAULT_STATE = Object.freeze({
   slides: 0,
   playerLevel: 0,
   swipeExp: 0,
   successfulSwipes: 0,
+  prestigeLevel: 0,
   upgradeLevels: Object.freeze({
     speed: 0,
     count: 0,
-    lucky: 0,
     mart: 0
   })
 });
@@ -31,10 +32,10 @@ function sanitizeGameState(input) {
     playerLevel: clampWholeNumber(source.playerLevel),
     swipeExp: clampWholeNumber(source.swipeExp),
     successfulSwipes: clampWholeNumber(source.successfulSwipes),
+    prestigeLevel: clampWholeNumber(source.prestigeLevel, { max: MAX_PRESTIGE_LEVEL }),
     upgradeLevels: {
       speed: clampWholeNumber(upgrades.speed, { max: MAX_UPGRADE_LEVEL }),
       count: clampWholeNumber(upgrades.count, { max: MAX_UPGRADE_LEVEL }),
-      lucky: clampWholeNumber(upgrades.lucky, { max: MAX_UPGRADE_LEVEL }),
       mart: clampWholeNumber(upgrades.mart, { max: MAX_UPGRADE_LEVEL })
     }
   };
