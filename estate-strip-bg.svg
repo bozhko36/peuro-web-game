@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 944" role="img" aria-labelledby="title desc">
+  <title id="title">Sunny meadow landscape</title>
+  <desc id="desc">A bright blue sky with soft clouds over a green field and a distant tree line.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d7ef2"/>
+      <stop offset="62%" stop-color="#6dc6ff"/>
+      <stop offset="100%" stop-color="#bdeaff"/>
+    </linearGradient>
+    <linearGradient id="field" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b8de39"/>
+      <stop offset="55%" stop-color="#8bbd29"/>
+      <stop offset="100%" stop-color="#5e8f1e"/>
+    </linearGradient>
+    <linearGradient id="shadowField" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4f7d20" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#4f7d20" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <rect width="1680" height="944" fill="url(#sky)"/>
+
+  <g opacity="0.98">
+    <g fill="#fff" filter="url(#soft)">
+      <ellipse cx="210" cy="145" rx="72" ry="48"/>
+      <ellipse cx="280" cy="160" rx="82" ry="56"/>
+      <ellipse cx="355" cy="142" rx="58" ry="42"/>
+
+      <ellipse cx="1245" cy="170" rx="54" ry="34"/>
+      <ellipse cx="1305" cy="156" rx="72" ry="48"/>
+      <ellipse cx="1375" cy="175" rx="82" ry="54"/>
+
+      <ellipse cx="560" cy="120" rx="46" ry="18"/>
+      <ellipse cx="615" cy="130" rx="56" ry="20"/>
+      <ellipse cx="915" cy="158" rx="52" ry="18"/>
+      <ellipse cx="975" cy="170" rx="62" ry="22"/>
+      <ellipse cx="1060" cy="138" rx="34" ry="14"/>
+    </g>
+    <g fill="#fff">
+      <ellipse cx="210" cy="145" rx="70" ry="46"/>
+      <ellipse cx="280" cy="160" rx="80" ry="54"/>
+      <ellipse cx="355" cy="142" rx="56" ry="40"/>
+
+      <ellipse cx="1245" cy="170" rx="52" ry="32"/>
+      <ellipse cx="1305" cy="156" rx="70" ry="46"/>
+      <ellipse cx="1375" cy="175" rx="80" ry="52"/>
+
+      <ellipse cx="560" cy="120" rx="44" ry="16"/>
+      <ellipse cx="615" cy="130" rx="54" ry="18"/>
+      <ellipse cx="915" cy="158" rx="50" ry="16"/>
+      <ellipse cx="975" cy="170" rx="60" ry="20"/>
+      <ellipse cx="1060" cy="138" rx="32" ry="12"/>
+    </g>
+  </g>
+
+  <g>
+    <path d="M0 550 C150 500 280 518 430 548 C590 578 710 574 840 532 C960 495 1115 498 1260 540 C1410 582 1545 582 1680 536 L1680 944 L0 944 Z" fill="#7ab12c"/>
+    <path d="M0 628 C176 594 350 606 516 632 C704 662 882 650 1042 616 C1215 579 1430 592 1680 644 L1680 944 L0 944 Z" fill="url(#field)"/>
+    <path d="M0 700 C220 674 460 696 715 738 C934 776 1264 772 1680 716 L1680 944 L0 944 Z" fill="#d6d94d"/>
+    <path d="M0 760 C176 728 308 728 452 756 C594 782 756 794 940 780 C1132 766 1356 732 1680 768 L1680 944 L0 944 Z" fill="#c5c538"/>
+  </g>
+
+  <g opacity="0.95">
+    <rect y="500" width="1680" height="96" fill="#5c9826"/>
+    <g fill="#3f7a22">
+      <circle cx="48" cy="494" r="54"/>
+      <circle cx="108" cy="470" r="48"/>
+      <circle cx="160" cy="500" r="42"/>
+
+      <circle cx="325" cy="515" r="40"/>
+      <circle cx="372" cy="488" r="46"/>
+      <circle cx="425" cy="514" r="40"/>
+
+      <circle cx="760" cy="495" r="48"/>
+      <circle cx="812" cy="474" r="44"/>
+      <circle cx="866" cy="500" r="40"/>
+
+      <circle cx="1092" cy="504" r="42"/>
+      <circle cx="1148" cy="486" r="48"/>
+      <circle cx="1202" cy="510" r="40"/>
+
+      <circle cx="1410" cy="492" r="58"/>
+      <circle cx="1480" cy="460" r="52"/>
+      <circle cx="1545" cy="502" r="46"/>
+    </g>
+    <g fill="#6ead2d">
+      <circle cx="60" cy="478" r="46"/>
+      <circle cx="118" cy="464" r="38"/>
+      <circle cx="336" cy="500" r="34"/>
+      <circle cx="384" cy="480" r="38"/>
+      <circle cx="772" cy="482" r="40"/>
+      <circle cx="1130" cy="492" r="38"/>
+      <circle cx="1436" cy="470" r="46"/>
+      <circle cx="1500" cy="478" r="40"/>
+    </g>
+    <g fill="#345f1d">
+      <rect x="67" y="505" width="9" height="64" rx="4"/>
+      <rect x="378" y="514" width="8" height="56" rx="4"/>
+      <rect x="811" y="505" width="8" height="60" rx="4"/>
+      <rect x="1145" y="514" width="8" height="54" rx="4"/>
+      <rect x="1476" y="506" width="10" height="70" rx="5"/>
+    </g>
+  </g>
+
+  <rect y="740" width="1680" height="204" fill="url(#shadowField)"/>
+</svg>

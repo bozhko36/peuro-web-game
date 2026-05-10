@@ -1,0 +1,1991 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Euro Slide Casino</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-0: #050505;
+      --bg-1: #0b0b0d;
+      --bg-2: #111113;
+      --panel-top: #171717;
+      --panel-bottom: #080808;
+      --gold-0: #f6b800;
+      --gold-1: #ffcc33;
+      --gold-2: #d89400;
+      --text-main: #ffffff;
+      --text-soft: #d7d3ca;
+      --text-muted: #8a8372;
+      --edge: rgba(255, 204, 51, 0.62);
+      --edge-soft: rgba(255, 204, 51, 0.24);
+      --glass-highlight: rgba(255, 255, 255, 0.08);
+      --shadow-deep: 0 26px 60px rgba(0, 0, 0, 0.62);
+      --shadow-gold: 0 0 20px rgba(246, 184, 0, 0.18);
+      --panel-fill: linear-gradient(180deg, rgba(23, 23, 23, 0.97) 0%, rgba(8, 8, 8, 0.98) 100%);
+      --panel-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      --stage-width: min(100vw, 430px);
+      --footer-offset: calc(env(safe-area-inset-bottom) + 18px);
+      --controls-height: 82px;
+      --controls-gap: 18px;
+      --controls-top: calc(var(--footer-offset) + var(--controls-height) + var(--controls-gap));
+      --note-fly-duration: 520ms;
+      --stream-fly-duration: 1200ms;
+      --score-scale: 1;
+      --score-bump-scale: 1.04;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(246, 184, 0, 0.16), transparent 32%),
+        radial-gradient(circle at 20% 20%, rgba(255, 204, 51, 0.09), transparent 28%),
+        radial-gradient(circle at 84% 86%, rgba(216, 148, 0, 0.09), transparent 24%),
+        linear-gradient(180deg, #020202 0%, #070708 35%, #0b0b0d 100%);
+      color: var(--text-main);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100dvh;
+      padding: 0;
+    }
+
+    .stage {
+      position: relative;
+      width: var(--stage-width);
+      height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255, 204, 51, 0.12), transparent 22%),
+        radial-gradient(circle at 50% 64%, rgba(255, 204, 51, 0.08), transparent 28%),
+        radial-gradient(circle at 8% 14%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px),
+        radial-gradient(circle at 92% 14%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px),
+        linear-gradient(180deg, #060606 0%, #0b0b0d 52%, #080808 100%);
+      background-size:
+        100% 100%,
+        100% 100%,
+        10px 10px,
+        10px 10px,
+        100% 100%;
+      border-radius: 0;
+      touch-action: none;
+    }
+
+    .stage::before,
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .stage::before {
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 204, 51, 0.1), transparent 18%),
+        radial-gradient(circle at 50% 96%, rgba(246, 184, 0, 0.08), transparent 22%);
+      z-index: 0;
+    }
+
+    .stage::after {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.03), transparent 14%);
+      z-index: 0;
+    }
+
+    .panel-surface {
+      background: var(--panel-fill);
+      border: 1px solid var(--edge);
+      box-shadow: var(--panel-inset), var(--shadow-deep), var(--shadow-gold);
+      backdrop-filter: blur(10px);
+    }
+
+    .hud {
+      position: absolute;
+      inset: calc(env(safe-area-inset-top) + clamp(12px, 3vw, 16px)) 0 auto;
+      z-index: 12;
+      display: grid;
+      justify-items: center;
+      gap: clamp(10px, 2vw, 12px);
+      pointer-events: none;
+    }
+
+    /* Balance header */
+    .score {
+      position: relative;
+      width: clamp(282px, 81vw, 348px);
+      min-height: 84px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .score::before,
+    .score::after {
+      content: "";
+      position: absolute;
+      top: 17px;
+      bottom: 17px;
+      width: 62px;
+      opacity: 0.2;
+      background-image: radial-gradient(circle, rgba(255, 204, 51, 0.44) 0 1.1px, transparent 1.2px);
+      background-size: 10px 10px;
+      pointer-events: none;
+    }
+
+    .score::before {
+      left: 18px;
+    }
+
+    .score::after {
+      right: 18px;
+    }
+
+    .score-flare {
+      position: absolute;
+      right: 22px;
+      top: 14px;
+      width: 28px;
+      height: 14px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 240, 176, 0.96) 0%, rgba(255, 204, 51, 0.6) 35%, transparent 72%);
+      filter: blur(1px);
+      opacity: 0.88;
+      pointer-events: none;
+    }
+
+    .score-label {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      transform: scale(var(--score-scale));
+      transform-origin: center;
+    }
+
+    .score.bump .score-label {
+      animation: text-bump 360ms cubic-bezier(0.18, 1.4, 0.35, 1);
+    }
+
+    .score.bump {
+      animation: score-glow 360ms ease-out;
+    }
+
+    .amount {
+      font-size: clamp(42px, 10.6vw, 52px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+      color: var(--text-main);
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 14px rgba(255, 255, 255, 0.06);
+    }
+
+    .currency {
+      font-size: clamp(23px, 5vw, 29px);
+      line-height: 1;
+      font-weight: 700;
+      color: var(--text-main);
+      opacity: 0.98;
+    }
+
+    /* Level bar */
+    .level-panel {
+      position: relative;
+      width: clamp(304px, 85vw, 364px);
+      min-height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 10px 18px 16px;
+      overflow: hidden;
+    }
+
+    .level-text {
+      position: relative;
+      z-index: 1;
+      color: var(--gold-1);
+      font-size: clamp(24px, 5.2vw, 28px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      text-shadow: 0 0 10px rgba(255, 204, 51, 0.14);
+    }
+
+    .xp-fill {
+      position: relative;
+      z-index: 1;
+      align-self: end;
+      justify-self: stretch;
+      margin-top: auto;
+      height: 8px;
+      border-radius: 999px;
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, #ffe07c 0%, #f6b800 48%, #d89400 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        0 0 14px rgba(246, 184, 0, 0.28);
+      transition: width 280ms cubic-bezier(0.22, 0.9, 0.25, 1);
+      width: 0;
+    }
+
+    /* Decorative silhouettes */
+    .decor-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .decor-icon {
+      position: absolute;
+      color: rgba(255, 214, 102, 0.09);
+      filter: drop-shadow(0 0 12px rgba(246, 184, 0, 0.05));
+    }
+
+    .decor-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .decor-soccer {
+      left: 18px;
+      top: 278px;
+      width: 72px;
+      height: 72px;
+    }
+
+    .decor-card {
+      left: 30px;
+      top: 392px;
+      width: 76px;
+      height: 96px;
+      color: rgba(255, 214, 102, 0.08);
+    }
+
+    .decor-slot {
+      right: 18px;
+      top: 276px;
+      width: 82px;
+      height: 84px;
+    }
+
+    .decor-roulette {
+      right: 22px;
+      top: 410px;
+      width: 74px;
+      height: 74px;
+    }
+
+    /* Central bill stage */
+    .bill-stage {
+      position: absolute;
+      left: 50%;
+      top: clamp(166px, 22vh, 188px);
+      bottom: calc(var(--controls-top) + 28px);
+      transform: translateX(-50%);
+      z-index: 4;
+      width: clamp(306px, 86vw, 376px);
+      border-radius: 30px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .bill-stage::before,
+    .bill-stage::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 54%;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 216, 110, 0.72) 0%, rgba(255, 204, 51, 0.24) 38%, transparent 72%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .bill-stage::before {
+      top: -7px;
+    }
+
+    .bill-stage::after {
+      bottom: -7px;
+    }
+
+    .bill-stage-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
+        radial-gradient(circle at 50% 14%, rgba(255, 204, 51, 0.08), transparent 18%),
+        linear-gradient(180deg, rgba(16, 16, 18, 0.98) 0%, rgba(8, 8, 10, 1) 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 204, 51, 0.08),
+        inset 0 20px 38px rgba(255, 255, 255, 0.02);
+      overflow: hidden;
+    }
+
+    .playfield {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      perspective: 900px;
+    }
+
+    .money-stack {
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      z-index: 1;
+      width: min(73%, 264px);
+      aspect-ratio: 909 / 1731;
+      transform: translateX(-50%);
+      pointer-events: none;
+      opacity: 0.18;
+      filter: saturate(0.85);
+    }
+
+    .stack-note {
+      position: absolute;
+      left: 50%;
+      bottom: calc(var(--stack-index) * -3px);
+      width: 100%;
+      aspect-ratio: 909 / 1731;
+      transform: translateX(-50%);
+      transform-origin: center bottom;
+      opacity: 0.9;
+    }
+
+    .banknote {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      z-index: 4;
+      width: min(76%, 276px);
+      aspect-ratio: 909 / 1731;
+      border: 0;
+      background: none;
+      cursor: ns-resize;
+      touch-action: none;
+      box-shadow:
+        0 16px 28px rgba(0, 0, 0, 0.38),
+        0 0 20px rgba(255, 204, 51, 0.12);
+      transform: translate3d(-50%, 0, 0) rotate(0deg) scale(1);
+      will-change: transform, opacity;
+    }
+
+    .banknote.dragging {
+      transition: none;
+    }
+
+    .banknote.snap {
+      transition: transform 420ms cubic-bezier(0.2, 1.1, 0.32, 1);
+    }
+
+    .banknote.pop {
+      animation: note-pop 430ms cubic-bezier(0.17, 1.55, 0.38, 1);
+    }
+
+    .banknote.fly {
+      animation: note-fly var(--note-fly-duration) ease-in forwards;
+      pointer-events: none;
+    }
+
+    .bill-art,
+    .stack-note img,
+    .stream-note img {
+      display: block;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(100% * 1731 / 909);
+      height: auto;
+      transform: translate(-50%, -50%) rotate(90deg);
+      transform-origin: center;
+      pointer-events: none;
+    }
+
+    .stream-note {
+      position: absolute;
+      left: var(--x);
+      bottom: -34%;
+      z-index: 6;
+      width: var(--w);
+      aspect-ratio: 909 / 1731;
+      pointer-events: none;
+      transform: translateX(-50%);
+      animation: stream-fly var(--stream-fly-duration) linear forwards;
+    }
+
+    /* Floating side controls */
+    .side-controls {
+      position: absolute;
+      inset: 0;
+      z-index: 14;
+      pointer-events: none;
+    }
+
+    .controls-row {
+      position: absolute;
+      left: 50%;
+      bottom: var(--footer-offset);
+      transform: translateX(-50%);
+      width: min(calc(100% - 36px), 392px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(10px, 2.4vw, 16px);
+      pointer-events: auto;
+    }
+
+    .control-card,
+    .control-button {
+      position: relative;
+      flex: 0 0 auto;
+      width: 82px;
+      height: 82px;
+      border-radius: 24px;
+      color: var(--text-main);
+    }
+
+    .control-card {
+      padding: 12px 10px 10px;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.1;
+    }
+
+    .control-button {
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .control-button:active,
+    .control-card:active {
+      transform: translateY(1px) scale(0.985);
+    }
+
+    .casino-toggle {
+      padding: 10px 8px 8px;
+      grid-template-rows: auto auto;
+      gap: 6px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .casino-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--gold-1);
+      filter: drop-shadow(0 0 8px rgba(255, 204, 51, 0.18));
+    }
+
+    .upgrades-toggle,
+    .menu-toggle {
+      padding: 10px 8px 8px;
+      grid-template-rows: auto auto;
+      gap: 6px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .upgrades-toggle[aria-expanded="true"],
+    .menu-toggle[aria-expanded="true"] {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 26px 60px rgba(0, 0, 0, 0.62),
+        0 0 24px rgba(246, 184, 0, 0.26);
+    }
+
+    .upgrades-icon {
+      width: 30px;
+      height: 30px;
+      color: var(--gold-1);
+      filter: drop-shadow(0 0 8px rgba(255, 204, 51, 0.18));
+    }
+
+    .estate-icon {
+      width: 30px;
+      height: 30px;
+      color: var(--gold-1);
+      filter: drop-shadow(0 0 8px rgba(255, 204, 51, 0.18));
+    }
+
+    .auto-title {
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .auto-switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      background: #353535;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55);
+    }
+
+    .auto-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #8f8f8f 0%, #6d6d6d 100%);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+      transition: transform 180ms ease;
+    }
+
+    .auto-toggle[aria-pressed="true"] .auto-switch {
+      background: linear-gradient(180deg, rgba(246, 184, 0, 0.84) 0%, rgba(216, 148, 0, 0.95) 100%);
+    }
+
+    .auto-toggle[aria-pressed="true"] .auto-switch::after {
+      transform: translateX(18px);
+      background: linear-gradient(180deg, #fff8d7 0%, #ffd76f 100%);
+    }
+
+    .auto-state {
+      color: var(--text-muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .auto-toggle[aria-pressed="true"] .auto-state {
+      color: var(--gold-1);
+    }
+
+    /* Panels opened by the side controls */
+    .upgrades,
+    .slot-panel,
+    .estate-panel {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      z-index: 16;
+      border-radius: 26px;
+      padding: 16px;
+      opacity: 0;
+      transform: translateY(16px) scale(0.98);
+      transform-origin: bottom center;
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+    }
+
+    .upgrades {
+      bottom: calc(var(--controls-top) + 6px);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .slot-panel {
+      top: 204px;
+      display: grid;
+      gap: 12px;
+      transform-origin: top center;
+    }
+
+    .estate-panel {
+      bottom: calc(var(--controls-top) + 6px);
+      display: grid;
+      gap: 12px;
+    }
+
+    .upgrades.open,
+    .slot-panel.open,
+    .estate-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .upgrade-tab {
+      min-height: 78px;
+      border: 1px solid rgba(255, 204, 51, 0.48);
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 48%),
+        linear-gradient(180deg, rgba(21, 21, 21, 0.98) 0%, rgba(8, 8, 8, 0.98) 100%);
+      color: var(--text-main);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 14px 26px rgba(0, 0, 0, 0.34);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      padding: 10px 8px;
+      text-align: center;
+      font: inherit;
+    }
+
+    .upgrade-tab:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .upgrade-name {
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .upgrade-level {
+      color: var(--text-soft);
+      font-size: 11px;
+    }
+
+    .upgrade-cost {
+      color: var(--gold-1);
+      font-size: 11px;
+    }
+
+    .estate-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .estate-title {
+      color: var(--gold-1);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .estate-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 96px;
+      border: 1px solid rgba(255, 204, 51, 0.48);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 42%),
+        linear-gradient(180deg, rgba(33, 18, 8, 0.98) 0%, rgba(20, 10, 4, 0.98) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 14px 26px rgba(0, 0, 0, 0.34);
+      color: var(--text-main);
+      padding: 14px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .estate-card:disabled {
+      opacity: 0.56;
+      cursor: default;
+    }
+
+    .estate-thumb {
+      width: 66px;
+      height: 50px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 204, 51, 0.32);
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      flex: 0 0 auto;
+    }
+
+    .estate-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .estate-copy {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .estate-name {
+      color: var(--text-main);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .estate-level {
+      color: var(--text-soft);
+      font-size: 11px;
+      line-height: 1.1;
+    }
+
+    .estate-note {
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .estate-cost {
+      color: var(--gold-1);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .estate-strip {
+      position: relative;
+      min-height: 156px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 204, 51, 0.36);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 18%),
+        linear-gradient(180deg, rgba(10, 18, 12, 0) 54%, rgba(16, 28, 12, 0.1) 74%, rgba(10, 18, 8, 0.28) 100%),
+        url("estate-strip-bg.svg");
+      background-size: auto, auto, cover;
+      background-position: center, center, 82% center;
+      background-repeat: no-repeat;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -18px 26px rgba(24, 31, 12, 0.18),
+        0 14px 26px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+
+    .estate-strip::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+
+    .estate-strip::after {
+      bottom: 0;
+      height: 58px;
+      background:
+        radial-gradient(24% 120% at -2% 100%, rgba(22, 39, 11, 0.98), transparent 60%),
+        linear-gradient(90deg, rgba(21, 38, 11, 0.86) 0%, rgba(21, 38, 11, 0.26) 10%, rgba(21, 38, 11, 0) 16%),
+        linear-gradient(180deg, rgba(47, 77, 21, 0) 0%, rgba(51, 84, 24, 0.1) 12%, rgba(22, 39, 11, 0.82) 100%);
+    }
+
+    .estate-line {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 28px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      min-height: 88px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0 2px 2px;
+      pointer-events: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      z-index: 2;
+    }
+
+    .estate-line::-webkit-scrollbar {
+      display: none;
+    }
+
+    .estate-building {
+      flex: 0 0 auto;
+      width: 72px;
+      height: 52px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow:
+        0 8px 14px rgba(0, 0, 0, 0.3),
+        0 0 14px rgba(255, 204, 51, 0.14);
+      animation: estate-pop 220ms cubic-bezier(0.22, 1.35, 0.4, 1) both;
+    }
+
+    .estate-building img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+
+    .estate-empty {
+      position: absolute;
+      inset: auto 16px 30px 16px;
+      color: rgba(255, 250, 232, 0.76);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+      font-size: 11px;
+      text-align: center;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .slot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .slot-title {
+      color: var(--gold-1);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .slot-close {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 204, 51, 0.4);
+      border-radius: 50%;
+      background: linear-gradient(180deg, #1a1a1a 0%, #0b0b0b 100%);
+      color: var(--gold-1);
+      cursor: pointer;
+      font: inherit;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .slot-reels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .slot-reel {
+      min-height: 86px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 46%),
+        linear-gradient(180deg, rgba(24, 24, 24, 0.98) 0%, rgba(11, 11, 11, 0.98) 100%);
+      border: 1px solid rgba(255, 204, 51, 0.32);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 14px 24px rgba(0, 0, 0, 0.3);
+      color: var(--gold-1);
+      font-size: 42px;
+    }
+
+    .slot-reel.spin {
+      animation: slot-pop 260ms cubic-bezier(0.18, 1.8, 0.35, 1);
+    }
+
+    .slot-reel.spinning {
+      animation: reel-shake 140ms linear infinite;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 204, 51, 0.22),
+        inset 0 18px 28px rgba(255, 204, 51, 0.12),
+        inset 0 -18px 28px rgba(255, 255, 255, 0.05),
+        0 14px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .slot-jackpot {
+      width: 56px;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 10px rgba(255, 204, 51, 0.18));
+    }
+
+    .slot-bet-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .slot-bet-label,
+    .slot-bet-value {
+      font-size: 14px;
+    }
+
+    .slot-bet-value {
+      color: var(--gold-1);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slot-bet {
+      grid-column: 1 / -1;
+      width: 100%;
+      accent-color: #f6b800;
+    }
+
+    .slot-spin {
+      min-height: 50px;
+      border: 1px solid rgba(255, 204, 51, 0.72);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f6b800 0%, #d89400 100%);
+      color: #140f03;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 16px 24px rgba(246, 184, 0, 0.16);
+      cursor: pointer;
+      font: inherit;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .slot-spin:disabled {
+      opacity: 0.52;
+      cursor: default;
+    }
+
+    .slot-result {
+      min-height: 1.2em;
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .firework {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      z-index: 18;
+      width: clamp(10px, 3vw, 20px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--c);
+      box-shadow: 0 0 14px var(--c);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: firework-burst var(--firework-duration, 820ms) ease-out forwards;
+    }
+
+    .firework.golden {
+      width: clamp(16px, 4.4vw, 28px);
+      box-shadow: 0 0 18px #fff5b8, 0 0 32px var(--c);
+    }
+
+    @keyframes score-glow {
+      0% { box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 18px rgba(246, 184, 0, 0.12); }
+      50% { box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 24px rgba(255, 204, 51, 0.18); }
+      100% { box-shadow: var(--panel-inset), var(--shadow-deep), 0 0 18px rgba(246, 184, 0, 0.12); }
+    }
+
+    @keyframes text-bump {
+      0% { transform: scale(var(--score-scale)); }
+      45% { transform: scale(var(--score-bump-scale)); }
+      100% { transform: scale(var(--score-scale)); }
+    }
+
+    @keyframes slot-pop {
+      0% { transform: scale(0.82); }
+      70% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes reel-shake {
+      0% { transform: translateY(-3px); filter: blur(0.4px); }
+      50% { transform: translateY(3px); filter: blur(1px); }
+      100% { transform: translateY(-3px); filter: blur(0.4px); }
+    }
+
+    @keyframes estate-pop {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.7);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes note-pop {
+      0% {
+        opacity: 0;
+        transform: translate3d(-50%, 58px, 0) scale(0.72) rotate(-3deg);
+      }
+      70% {
+        opacity: 1;
+        transform: translate3d(-50%, -5px, 0) scale(1.04) rotate(1.2deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(-50%, 0, 0) scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes note-fly {
+      0% {
+        opacity: 1;
+        transform: translate3d(calc(-50% + var(--drag-x, 0px)), var(--drag-y, 0px), 0) rotate(var(--drag-r, 0deg)) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(-50% + var(--drag-x, 0px) + 20px), -92vh, 0) rotate(14deg) scale(0.88);
+      }
+    }
+
+    @keyframes stream-fly {
+      0% {
+        opacity: 0;
+        transform: translate3d(-50%, 0, 0) rotate(var(--tilt)) scale(0.82);
+      }
+      12% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(-50% + var(--drift)), -128vh, 0) rotate(calc(var(--tilt) + var(--spin))) scale(1.04);
+      }
+    }
+
+    @keyframes firework-burst {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.45);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.08);
+      }
+    }
+
+    @media (max-width: 390px) {
+      .bill-stage {
+        top: 168px;
+        width: calc(100vw - 26px);
+        height: min(50vh, 446px);
+      }
+
+      .control-card,
+      .control-button {
+        width: 76px;
+        height: 76px;
+      }
+
+      .controls-row {
+        width: calc(100% - 24px);
+        gap: 10px;
+      }
+    }
+
+    @media (max-height: 760px) {
+      .bill-stage {
+        bottom: calc(var(--controls-top) + 20px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Euro Slide game">
+    <div class="decor-layer" aria-hidden="true">
+      <div class="decor-icon decor-soccer">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+          <circle cx="32" cy="32" r="26"></circle>
+          <path d="M32 18l8 6-3 10H27l-3-10 8-6z"></path>
+          <path d="M24 24l-9 6m25-6 9 6M20 45l7-11m17 11-7-11m-10 0-7 5m24-5 7 5"></path>
+        </svg>
+      </div>
+      <div class="decor-icon decor-card">
+        <svg viewBox="0 0 64 80" fill="none" stroke="currentColor" stroke-width="3">
+          <rect x="10" y="8" width="44" height="64" rx="8"></rect>
+          <path d="M24 22c4-6 12-6 16 0-2 7-8 10-8 10s-6-3-8-10z"></path>
+          <path d="M32 32v16"></path>
+          <path d="M27 42h10"></path>
+        </svg>
+      </div>
+      <div class="decor-icon decor-slot">
+        <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="3">
+          <rect x="14" y="10" width="38" height="50" rx="8"></rect>
+          <rect x="22" y="20" width="22" height="14" rx="3"></rect>
+          <path d="M22 42h22"></path>
+          <path d="M57 22c5 0 7 3 7 7s-2 7-7 7"></path>
+          <circle cx="58" cy="29" r="2.5" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </div>
+      <div class="decor-icon decor-roulette">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+          <circle cx="32" cy="32" r="24"></circle>
+          <circle cx="32" cy="32" r="6"></circle>
+          <path d="M32 8v18M32 38v18M8 32h18M38 32h18M15 15l13 13M36 36l13 13M49 15L36 28M28 36L15 49"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Top HUD -->
+    <header class="hud">
+      <div class="score panel-surface" aria-live="polite" aria-label="0 euro">
+        <span class="score-flare" aria-hidden="true"></span>
+        <span class="score-label">
+          <span class="amount" id="slides">0</span>
+          <span class="currency">euro</span>
+        </span>
+      </div>
+
+      <div class="level-panel panel-surface">
+        <span class="level-text" id="level">Level 0</span>
+        <span class="xp-fill"></span>
+      </div>
+    </header>
+
+    <!-- Main bill frame -->
+    <section class="bill-stage panel-surface" aria-label="Slide the banknote upward">
+      <div class="bill-stage-inner">
+        <section class="playfield" aria-label="Slide the banknote upward">
+          <div class="money-stack" aria-hidden="true">
+            <div class="stack-note" style="--stack-index: 14;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 13;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 12;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 11;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 10;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 9;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 8;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 7;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 6;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 5;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 4;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 3;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 2;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 1;"><img class="bill-art" alt=""></div>
+            <div class="stack-note" style="--stack-index: 0;"><img class="bill-art" alt=""></div>
+          </div>
+          <div class="banknote pop" role="button" aria-label="Euro banknote. Move upward to slide." tabindex="0">
+            <img class="bill-art" alt="Euro bill">
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Floating controls -->
+    <div class="side-controls">
+      <div class="controls-row">
+        <button class="control-card auto-toggle panel-surface" type="button" aria-pressed="false" aria-label="Auto Play off">
+          <span class="auto-title">Auto Play</span>
+          <span class="auto-switch" aria-hidden="true"></span>
+          <span class="auto-state">OFF</span>
+        </button>
+
+        <button class="control-button menu-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open upgrades">
+          <svg class="upgrades-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M32 10l4 9 10 2-7 7 2 10-9-5-9 5 2-10-7-7 10-2 4-9z"></path>
+            <circle cx="32" cy="32" r="5"></circle>
+          </svg>
+          <span>Upgrades</span>
+        </button>
+
+        <button class="control-button upgrades-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open real estate">
+          <svg class="estate-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+            <path d="M12 50h40"></path>
+            <path d="M18 50V28l14-10 14 10v22"></path>
+            <path d="M24 50V36h16v14"></path>
+            <path d="M22 22h20"></path>
+          </svg>
+          <span>Real Estate</span>
+        </button>
+
+        <button class="control-button casino-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open casino">
+          <svg class="casino-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3">
+            <circle cx="32" cy="32" r="23"></circle>
+            <circle cx="32" cy="32" r="14"></circle>
+            <path d="M32 14v6M32 44v6M14 32h6M44 32h6M20 20l4 4M40 40l4 4M44 20l-4 4M24 40l-4 4"></path>
+            <path d="M32 25c3-5 10-5 13 0-1 6-6 9-6 9s-5-2-7-7c-2 5-7 7-7 7s-5-3-6-9c3-5 10-5 13 0z" fill="currentColor" stroke="none"></path>
+          </svg>
+          <span>Casino</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Upgrade drawer -->
+    <nav class="upgrades panel-surface" aria-label="Upgrades">
+      <button class="upgrade-tab" type="button" data-upgrade="speed">
+        <span class="upgrade-name">Speed</span>
+        <span class="upgrade-level">Level <span data-level="speed">0</span>/50</span>
+        <span class="upgrade-cost" data-cost="speed">5 euro</span>
+      </button>
+      <button class="upgrade-tab" type="button" data-upgrade="count">
+        <span class="upgrade-name">Count</span>
+        <span class="upgrade-level">Level <span data-level="count">0</span>/50</span>
+        <span class="upgrade-cost" data-cost="count">10 euro</span>
+      </button>
+      <button class="upgrade-tab" type="button" data-upgrade="lucky">
+        <span class="upgrade-name">Lucky</span>
+        <span class="upgrade-level">Level <span data-level="lucky">0</span>/50</span>
+        <span class="upgrade-cost" data-cost="lucky">25 euro</span>
+      </button>
+    </nav>
+
+    <!-- Real estate panel -->
+    <section class="estate-panel panel-surface" aria-label="Real estate">
+      <div class="estate-head">
+        <div class="estate-title">Real Estate</div>
+      </div>
+      <button class="estate-card" type="button" data-upgrade="mart">
+        <span class="estate-thumb">
+          <img src="minimart.png" alt="">
+        </span>
+        <span class="estate-copy">
+          <span class="estate-name">Minimart</span>
+          <span class="estate-level">Level <span data-level="mart">0</span>/50</span>
+          <span class="estate-note">Passive euro every second</span>
+        </span>
+        <span class="estate-cost" data-cost="mart">50 euro</span>
+      </button>
+      <div class="estate-strip" aria-hidden="true">
+        <div class="estate-line"></div>
+        <div class="estate-empty">Buy Minimart to grow your block</div>
+      </div>
+    </section>
+
+    <!-- Casino panel -->
+    <section class="slot-panel panel-surface" aria-label="Slot machine">
+      <div class="slot-head">
+        <div class="slot-title">Casino</div>
+        <button class="slot-close" type="button" aria-label="Close casino">×</button>
+      </div>
+      <div class="slot-reels" aria-live="polite">
+        <div class="slot-reel" data-reel="0">🍒</div>
+        <div class="slot-reel" data-reel="1"><img class="slot-jackpot" src="jackpot.png" alt="Jackpot"></div>
+        <div class="slot-reel" data-reel="2">⭐</div>
+      </div>
+      <div class="slot-bet-row">
+        <span class="slot-bet-label">Bet</span>
+        <span class="slot-bet-value"><span id="slot-bet-value">1</span> euro</span>
+        <input class="slot-bet" id="slot-bet" type="range" min="1" max="1" value="1">
+      </div>
+      <button class="slot-spin" type="button">Spin</button>
+      <div class="slot-result">Pick a bet and spin</div>
+    </section>
+
+  </main>
+
+  <script src="game-persistence.js"></script>
+  <script>
+    const billImage = "banknote.png";
+
+    const stage = document.querySelector(".stage");
+    const note = document.querySelector(".banknote");
+    const scoreBox = document.querySelector(".score");
+    const scoreLabel = document.querySelector(".score-label");
+    const slidesValue = document.querySelector("#slides");
+    const levelValue = document.querySelector("#level");
+    const upgradeButtons = document.querySelectorAll("[data-upgrade]");
+    const levelValues = document.querySelectorAll("[data-level]");
+    const costValues = document.querySelectorAll("[data-cost]");
+    const autoToggle = document.querySelector(".auto-toggle");
+    const autoState = document.querySelector(".auto-state");
+    const upgradesMenu = document.querySelector(".upgrades");
+    const upgradesToggle = document.querySelector(".upgrades-toggle");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const casinoToggle = document.querySelector(".casino-toggle");
+    const estatePanel = document.querySelector(".estate-panel");
+    const estateLine = document.querySelector(".estate-line");
+    const estateEmpty = document.querySelector(".estate-empty");
+    const xpFill = document.querySelector(".xp-fill");
+    const slotPanel = document.querySelector(".slot-panel");
+    const slotClose = document.querySelector(".slot-close");
+    const slotReels = document.querySelectorAll(".slot-reel");
+    const slotBet = document.querySelector("#slot-bet");
+    const slotBetValue = document.querySelector("#slot-bet-value");
+    const slotSpin = document.querySelector(".slot-spin");
+    const slotResult = document.querySelector(".slot-result");
+    const maxUpgradeLevel = 50;
+    const saveStorageKey = "euro-slide-casino-save";
+    const persistence = window.GamePersistence;
+    const slotSymbols = ["🍒", "jackpot", "⭐", "🍀", "🔥", "💰", "⚡", "🍋"];
+    const upgradeBaseCosts = {
+      speed: 5,
+      count: 10,
+      lucky: 25,
+      mart: 50
+    };
+    const upgradeLevels = {
+      speed: 0,
+      count: 0,
+      lucky: 0,
+      mart: 0
+    };
+
+    let slides = 56;
+    let playerLevel = 0;
+    let swipeExp = 0;
+    let successfulSwipes = 0;
+    let dragX = 0;
+    let dragY = 0;
+    let lastPointerX = null;
+    let lastPointerY = null;
+    let idleTimer = null;
+    let streamTimer = null;
+    let streamStopTimer = null;
+    let autoTimer = null;
+    let passiveTimer = null;
+    let isAnimating = false;
+    let streamMode = false;
+    let autoMode = false;
+    let upgradesOpen = false;
+    let slotOpen = false;
+    let estateOpen = false;
+    let slotSpinning = false;
+
+    loadSavedProgress();
+
+    document.querySelectorAll(".bill-art").forEach((image) => {
+      image.src = billImage;
+    });
+
+    function getCurrentGameState() {
+      return {
+        slides,
+        playerLevel,
+        swipeExp,
+        successfulSwipes,
+        upgradeLevels: { ...upgradeLevels }
+      };
+    }
+
+    function saveProgress() {
+      persistence.writeGameState(window.localStorage, saveStorageKey, getCurrentGameState());
+    }
+
+    function loadSavedProgress() {
+      const saved = persistence.readGameState(window.localStorage, saveStorageKey);
+      if (!saved) return;
+
+      slides = saved.slides;
+      playerLevel = saved.playerLevel;
+      swipeExp = saved.swipeExp;
+      successfulSwipes = saved.successfulSwipes;
+      Object.assign(upgradeLevels, saved.upgradeLevels);
+    }
+
+    function slideThreshold() {
+      return Math.min(120, stage.clientHeight * 0.32);
+    }
+
+    function scheduleSnapBack() {
+      clearTimeout(idleTimer);
+      if (isAnimating || dragY === 0) return;
+      idleTimer = setTimeout(() => {
+        if (!isAnimating && dragY > -slideThreshold()) snapBack();
+      }, 260);
+    }
+
+    function setNoteTransform(x, y) {
+      const rotation = Math.max(-10, Math.min(10, x / 18));
+      note.style.setProperty("--drag-x", `${x}px`);
+      note.style.setProperty("--drag-y", `${y}px`);
+      note.style.setProperty("--drag-r", `${rotation}deg`);
+      note.style.transform = `translate3d(calc(-50% + ${x}px), ${y}px, 0) rotate(${rotation}deg) scale(1)`;
+    }
+
+    function bumpCounter() {
+      scoreBox.classList.remove("bump");
+      void scoreBox.offsetWidth;
+      scoreBox.classList.add("bump");
+    }
+
+    function getSwipeReward() {
+      return 1 + upgradeLevels.count;
+    }
+
+    function updateScore() {
+      const label = slides.toLocaleString("en-US");
+      const digits = label.length;
+      const scale = Math.max(0.72, 1 - Math.max(0, digits - 4) * 0.05);
+      slidesValue.textContent = label;
+      scoreLabel.style.setProperty("--score-scale", scale.toFixed(2));
+      scoreLabel.style.setProperty("--score-bump-scale", (scale * 1.04).toFixed(2));
+      scoreBox.style.setProperty("--score-scale", scale.toFixed(2));
+      scoreBox.style.setProperty("--score-bump-scale", (scale * 1.04).toFixed(2));
+      scoreBox.setAttribute("aria-label", `${label} euro`);
+      bumpCounter();
+      renderUpgradeLevels();
+      updateSlotControls();
+    }
+
+    function getExpNeeded() {
+      return (playerLevel + 1) * 20;
+    }
+
+    function updateExpBar() {
+      const needed = getExpNeeded();
+      const progress = Math.max(0, Math.min(1, swipeExp / needed));
+      levelValue.textContent = `Level ${playerLevel}`;
+      levelValue.setAttribute("aria-label", `Level ${playerLevel}, ${swipeExp} of ${needed} experience`);
+      xpFill.style.width = `${progress * 100}%`;
+      saveProgress();
+    }
+
+    function renderEstateLine() {
+      estateLine.textContent = "";
+      const count = upgradeLevels.mart;
+      estateEmpty.hidden = count > 0;
+      for (let index = 0; index < count; index += 1) {
+        const building = document.createElement("span");
+        const image = document.createElement("img");
+        building.className = "estate-building";
+        image.src = "minimart.png";
+        image.alt = "";
+        building.style.animationDelay = `${index * 24}ms`;
+        building.appendChild(image);
+        estateLine.appendChild(building);
+      }
+      estateLine.scrollLeft = estateLine.scrollWidth;
+      saveProgress();
+    }
+
+    function getSlotBet() {
+      return Math.max(1, Math.min(slides, Number(slotBet.value) || 1));
+    }
+
+    function updateSlotControls() {
+      const maxBet = Math.max(1, slides);
+      slotBet.max = String(maxBet);
+      if (Number(slotBet.value) > maxBet) slotBet.value = String(maxBet);
+      if (slides <= 0) slotBet.value = "1";
+      slotBet.disabled = slides <= 0 || slotSpinning;
+      slotSpin.disabled = slides <= 0 || slotSpinning;
+      slotBetValue.textContent = slides <= 0 ? "0" : getSlotBet().toLocaleString("en-US");
+    }
+
+    function renderSlotSymbol(reel, symbol) {
+      reel.textContent = "";
+      if (symbol === "jackpot") {
+        const image = document.createElement("img");
+        image.className = "slot-jackpot";
+        image.src = "jackpot.png";
+        image.alt = "Jackpot";
+        reel.appendChild(image);
+      } else {
+        reel.textContent = symbol;
+      }
+    }
+
+    function randomSlotSymbol() {
+      return slotSymbols[Math.floor(Math.random() * slotSymbols.length)];
+    }
+
+    function setSlotOpen(open) {
+      slotOpen = open;
+      slotPanel.classList.toggle("open", slotOpen);
+      casinoToggle.setAttribute("aria-expanded", String(slotOpen));
+      casinoToggle.setAttribute("aria-label", slotOpen ? "Close casino" : "Open casino");
+      if (slotOpen) {
+        setUpgradesOpen(false);
+        setEstateOpen(false);
+        updateSlotControls();
+      }
+    }
+
+    function setEstateOpen(open) {
+      estateOpen = open;
+      estatePanel.classList.toggle("open", estateOpen);
+      upgradesToggle.setAttribute("aria-expanded", String(estateOpen));
+      upgradesToggle.setAttribute("aria-label", estateOpen ? "Close real estate" : "Open real estate");
+      if (estateOpen) {
+        setUpgradesOpen(false);
+        setSlotOpen(false);
+      }
+    }
+
+    async function spinSlot() {
+      if (slotSpinning || slides <= 0) return;
+      const bet = getSlotBet();
+      if (bet > slides) return;
+
+      slotSpinning = true;
+      slotResult.textContent = "Spinning...";
+      spendEuros(bet);
+      updateSlotControls();
+
+      const result = Array.from({ length: 3 }, randomSlotSymbol);
+      const stopTimes = [3000, 3500, 4000];
+      await Promise.all(Array.from(slotReels, (reel, index) => new Promise((resolve) => {
+        reel.classList.remove("spin");
+        reel.classList.add("spinning");
+
+        const interval = setInterval(() => {
+          renderSlotSymbol(reel, randomSlotSymbol());
+        }, 85 + index * 20);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          reel.classList.remove("spinning");
+          renderSlotSymbol(reel, result[index]);
+          reel.classList.remove("spin");
+          void reel.offsetWidth;
+          reel.classList.add("spin");
+          resolve();
+        }, stopTimes[index]);
+      })));
+
+      const allMatch = result[0] === result[1] && result[1] === result[2];
+      const pairMatch = result[0] === result[1] || result[1] === result[2] || result[0] === result[2];
+      const jackpot = allMatch && result[0] === "jackpot";
+      const payout = jackpot ? bet * 10000 : allMatch ? bet * 6 : pairMatch ? bet * 2 : 0;
+      if (payout > 0) {
+        addEuros(payout);
+        slotResult.textContent = jackpot
+          ? `JACKPOT ${payout.toLocaleString("en-US")} euro`
+          : `Won ${payout.toLocaleString("en-US")} euro`;
+      } else {
+        slotResult.textContent = `Lost ${bet.toLocaleString("en-US")} euro`;
+      }
+      slotSpinning = false;
+      updateSlotControls();
+    }
+
+    function addSwipeExp(amount) {
+      swipeExp += amount;
+      while (swipeExp >= getExpNeeded()) {
+        swipeExp -= getExpNeeded();
+        playerLevel += 1;
+      }
+      updateExpBar();
+    }
+
+    function crossedMultiple(before, after, step) {
+      return Math.floor(before / step) < Math.floor(after / step);
+    }
+
+    function addEuros(amount) {
+      const previous = slides;
+      slides += amount;
+      updateScore();
+      saveProgress();
+      if (crossedMultiple(previous, slides, 100)) {
+        launchGoldenFireworks();
+      } else if (crossedMultiple(previous, slides, 10)) {
+        launchFireworks();
+      }
+    }
+
+    function spendEuros(amount) {
+      slides = Math.max(0, slides - amount);
+      updateScore();
+      saveProgress();
+    }
+
+    function runPassiveIncome() {
+      if (upgradeLevels.mart <= 0) return;
+      addEuros(upgradeLevels.mart);
+    }
+
+    function getLuckyBonus() {
+      if (upgradeLevels.lucky === 0 || successfulSwipes % 100 !== 0) return 0;
+      const min = upgradeLevels.lucky * 10;
+      const max = upgradeLevels.lucky * 50;
+      return Math.floor(min + Math.random() * (max - min + 1));
+    }
+
+    function getSpeedMultiplier() {
+      return 1 + upgradeLevels.speed * 0.045;
+    }
+
+    function getStreamInterval() {
+      return Math.max(160, Math.round(400 / getSpeedMultiplier()));
+    }
+
+    function getAutoInterval() {
+      return Math.max(240, Math.round(780 / getSpeedMultiplier()));
+    }
+
+    function getUpgradeCost(type) {
+      if (!Object.prototype.hasOwnProperty.call(upgradeBaseCosts, type)) return 0;
+      if (upgradeLevels[type] >= maxUpgradeLevel) return 0;
+      const nextLevel = upgradeLevels[type] + 1;
+      return upgradeBaseCosts[type] * nextLevel * nextLevel;
+    }
+
+    function applyUpgradeEffects() {
+      const speed = getSpeedMultiplier();
+      const noteDuration = Math.max(140, Math.round(520 / speed));
+      const streamDuration = Math.max(360, Math.round(1200 / speed));
+      stage.style.setProperty("--note-fly-duration", `${noteDuration}ms`);
+      stage.style.setProperty("--stream-fly-duration", `${streamDuration}ms`);
+      renderUpgradeLevels();
+      if (streamMode) {
+        clearInterval(streamTimer);
+        streamTimer = setInterval(streamTick, getStreamInterval());
+      }
+      if (autoMode) {
+        clearInterval(autoTimer);
+        autoTimer = setInterval(runAutoSwipe, getAutoInterval());
+      }
+    }
+
+    function renderUpgradeLevels() {
+      levelValues.forEach((value) => {
+        const type = value.dataset.level;
+        value.textContent = upgradeLevels[type];
+      });
+      costValues.forEach((value) => {
+        const type = value.dataset.cost;
+        const isMaxed = upgradeLevels[type] >= maxUpgradeLevel;
+        value.textContent = isMaxed ? "Max" : `${getUpgradeCost(type)} euro`;
+      });
+      upgradeButtons.forEach((button) => {
+        const type = button.dataset.upgrade;
+        const isMaxed = upgradeLevels[type] >= maxUpgradeLevel;
+        const cost = getUpgradeCost(type);
+        const isAffordable = slides >= cost;
+        button.disabled = isMaxed || !isAffordable;
+        button.setAttribute(
+          "aria-label",
+          isMaxed
+            ? `${type} upgrade level ${maxUpgradeLevel} of ${maxUpgradeLevel}`
+            : `${type} upgrade level ${upgradeLevels[type]} of ${maxUpgradeLevel}, costs ${cost} euro`
+        );
+      });
+    }
+
+    function upgrade(type) {
+      if (!Object.prototype.hasOwnProperty.call(upgradeLevels, type)) return;
+      if (upgradeLevels[type] >= maxUpgradeLevel) return;
+      const cost = getUpgradeCost(type);
+      if (slides < cost) return;
+      spendEuros(cost);
+      upgradeLevels[type] += 1;
+      if (type === "mart") renderEstateLine();
+      applyUpgradeEffects();
+      saveProgress();
+    }
+
+    function emitFireworks(options = {}) {
+      const golden = Boolean(options.golden);
+      const colors = golden
+        ? ["#fff7b8", "#ffe15a", "#ffc400", "#ff9f1c", "#ffffff"]
+        : ["#ffef3f", "#ffc95a", "#fff7b8", "#f6b800", "#ffffff"];
+      const stageRect = stage.getBoundingClientRect();
+      const scoreRect = scoreBox.getBoundingClientRect();
+      const originX = scoreRect.left + scoreRect.width / 2 - stageRect.left;
+      const originY = scoreRect.bottom - stageRect.top - 2;
+      const spread = golden ? 0.34 : 0.22;
+      const bursts = golden
+        ? [
+            { x: originX - scoreRect.width * spread, y: originY },
+            { x: originX + scoreRect.width * spread, y: originY },
+            { x: originX, y: originY + 2 },
+            { x: originX, y: originY + 18 }
+          ]
+        : [
+            { x: originX - scoreRect.width * spread, y: originY },
+            { x: originX + scoreRect.width * spread, y: originY },
+            { x: originX, y: originY + 4 }
+          ];
+
+      bursts.forEach((burst) => {
+        const particleCount = golden ? 38 : 22;
+        for (let i = 0; i < particleCount; i += 1) {
+          const particle = document.createElement("i");
+          const angle = (Math.PI * i) / (particleCount - 1);
+          const distance = golden ? 360 + Math.random() * 540 : 190 + Math.random() * 280;
+          particle.className = golden ? "firework golden" : "firework";
+          particle.style.setProperty("--firework-duration", golden ? "1120ms" : "820ms");
+          particle.style.setProperty("--x", `${burst.x}px`);
+          particle.style.setProperty("--y", `${burst.y}px`);
+          particle.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+          particle.style.setProperty("--dy", `${24 + Math.sin(angle) * distance}px`);
+          particle.style.setProperty("--c", colors[(i + slides) % colors.length]);
+          stage.appendChild(particle);
+          particle.addEventListener("animationend", () => particle.remove(), { once: true });
+        }
+      });
+    }
+
+    function launchFireworks() {
+      emitFireworks();
+    }
+
+    function launchGoldenFireworks() {
+      emitFireworks({ golden: true });
+    }
+
+    function createStreamNote() {
+      const streamNote = document.createElement("div");
+      const streamImage = document.createElement("img");
+      streamNote.className = "stream-note";
+      streamImage.src = billImage;
+      streamImage.alt = "";
+      streamNote.style.setProperty("--x", `${18 + Math.random() * 64}%`);
+      streamNote.style.setProperty("--w", `${Math.round(120 + Math.random() * 70)}px`);
+      streamNote.style.setProperty("--drift", `${Math.round(-52 + Math.random() * 104)}px`);
+      streamNote.style.setProperty("--tilt", `${Math.round(-10 + Math.random() * 20)}deg`);
+      streamNote.style.setProperty("--spin", `${Math.random() > 0.5 ? 22 : -22}deg`);
+      streamNote.appendChild(streamImage);
+      stage.appendChild(streamNote);
+      streamNote.addEventListener("animationend", () => streamNote.remove(), { once: true });
+    }
+
+    function streamTick() {
+      createStreamNote();
+      addEuros(1);
+    }
+
+    function startMoneyStream() {
+      if (streamMode) return;
+      streamMode = true;
+      createStreamNote();
+      streamTimer = setInterval(streamTick, getStreamInterval());
+      streamStopTimer = setTimeout(stopMoneyStream, 3000);
+    }
+
+    function stopMoneyStream() {
+      streamMode = false;
+      clearInterval(streamTimer);
+      clearTimeout(streamStopTimer);
+      streamTimer = null;
+      streamStopTimer = null;
+    }
+
+    function respawnNote() {
+      isAnimating = false;
+      dragX = 0;
+      dragY = 0;
+      lastPointerX = null;
+      lastPointerY = null;
+      note.className = "banknote pop";
+      note.style.opacity = "";
+      setNoteTransform(0, 0);
+    }
+
+    function completeSlide() {
+      isAnimating = true;
+      clearTimeout(idleTimer);
+      lastPointerX = null;
+      lastPointerY = null;
+      successfulSwipes += 1;
+      const swipeReward = getSwipeReward();
+      addEuros(swipeReward);
+      addSwipeExp(swipeReward);
+      const luckyBonus = getLuckyBonus();
+      if (luckyBonus > 0) addEuros(luckyBonus);
+      if (successfulSwipes > 5) startMoneyStream();
+      note.classList.remove("dragging", "snap", "pop");
+      note.classList.add("fly");
+      note.addEventListener("animationend", respawnNote, { once: true });
+    }
+
+    function runAutoSwipe() {
+      if (!isAnimating) completeSlide();
+    }
+
+    function startAutoSwipe() {
+      autoMode = true;
+      autoToggle.setAttribute("aria-pressed", "true");
+      autoToggle.setAttribute("aria-label", "Auto Play on");
+      autoState.textContent = "ON";
+      runAutoSwipe();
+      clearInterval(autoTimer);
+      autoTimer = setInterval(runAutoSwipe, getAutoInterval());
+    }
+
+    function stopAutoSwipe() {
+      autoMode = false;
+      clearInterval(autoTimer);
+      autoTimer = null;
+      autoToggle.setAttribute("aria-pressed", "false");
+      autoToggle.setAttribute("aria-label", "Auto Play off");
+      autoState.textContent = "OFF";
+    }
+
+    function setUpgradesOpen(open) {
+      upgradesOpen = open;
+      upgradesMenu.classList.toggle("open", upgradesOpen);
+      menuToggle.setAttribute("aria-expanded", String(upgradesOpen));
+      menuToggle.setAttribute("aria-label", upgradesOpen ? "Close upgrades" : "Open upgrades");
+      if (upgradesOpen) {
+        setSlotOpen(false);
+        setEstateOpen(false);
+      }
+    }
+
+    function snapBack() {
+      clearTimeout(idleTimer);
+      lastPointerX = null;
+      lastPointerY = null;
+      note.classList.remove("dragging", "pop");
+      note.classList.add("snap");
+      dragX = 0;
+      dragY = 0;
+      setNoteTransform(0, 0);
+      note.addEventListener("transitionend", () => note.classList.remove("snap"), { once: true });
+    }
+
+    function applyMovement(deltaX, deltaY) {
+      if (isAnimating) return;
+      const upward = Math.max(0, -deltaY);
+      const downward = Math.max(0, deltaY);
+      if (upward === 0 && downward === 0 && Math.abs(deltaX) < 0.1) return;
+
+      note.classList.remove("snap", "pop");
+      note.classList.add("dragging");
+      dragX = Math.max(-28, Math.min(28, dragX + deltaX * 0.18));
+      dragY = Math.min(32, dragY + downward * 0.18);
+      dragY -= upward * 1.18;
+      setNoteTransform(dragX, dragY);
+
+      if (dragY <= -slideThreshold()) {
+        completeSlide();
+      } else {
+        scheduleSnapBack();
+      }
+    }
+
+    function isUiControlTarget(target) {
+      return target.closest(".upgrades, .estate-panel, .slot-panel, .auto-toggle, .upgrades-toggle, .casino-toggle, .menu-toggle");
+    }
+
+    stage.addEventListener("pointermove", (event) => {
+      if (isUiControlTarget(event.target)) return;
+      if (isAnimating) return;
+      if (lastPointerX === null || lastPointerY === null) {
+        lastPointerX = event.clientX;
+        lastPointerY = event.clientY;
+        return;
+      }
+      const deltaX = event.clientX - lastPointerX;
+      const deltaY = event.clientY - lastPointerY;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      applyMovement(deltaX, deltaY);
+    });
+
+    stage.addEventListener("pointerleave", () => {
+      lastPointerX = null;
+      lastPointerY = null;
+      scheduleSnapBack();
+    });
+
+    stage.addEventListener("wheel", (event) => {
+      if (isUiControlTarget(event.target)) return;
+      event.preventDefault();
+      applyMovement(event.deltaX, -event.deltaY);
+    }, { passive: false });
+
+    stage.addEventListener("touchmove", (event) => {
+      event.preventDefault();
+    }, { passive: false });
+
+    note.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowUp" && event.key !== " ") return;
+      event.preventDefault();
+      if (!isAnimating) completeSlide();
+    });
+
+    upgradeButtons.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        upgrade(button.dataset.upgrade);
+      });
+    });
+
+    autoToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (autoMode) stopAutoSwipe();
+      else startAutoSwipe();
+    });
+
+    upgradesToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setEstateOpen(!estateOpen);
+    });
+
+    menuToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setUpgradesOpen(!upgradesOpen);
+    });
+
+    casinoToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setSlotOpen(!slotOpen);
+    });
+
+    slotClose.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setSlotOpen(false);
+    });
+
+    slotBet.addEventListener("input", () => updateSlotControls());
+    slotSpin.addEventListener("click", (event) => {
+      event.stopPropagation();
+      spinSlot();
+    });
+
+    window.addEventListener("pagehide", saveProgress);
+    window.addEventListener("beforeunload", saveProgress);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") saveProgress();
+    });
+
+    stage.addEventListener("pointerdown", (event) => {
+      if (
+        upgradesOpen &&
+        !upgradesMenu.contains(event.target) &&
+        !menuToggle.contains(event.target) &&
+        !upgradesToggle.contains(event.target)
+      ) {
+        setUpgradesOpen(false);
+      }
+      if (estateOpen && !estatePanel.contains(event.target) && !upgradesToggle.contains(event.target)) {
+        setEstateOpen(false);
+      }
+      if (slotOpen && !slotPanel.contains(event.target) && !casinoToggle.contains(event.target)) {
+        setSlotOpen(false);
+      }
+    });
+
+    passiveTimer = setInterval(runPassiveIncome, 1000);
+    renderEstateLine();
+    updateExpBar();
+    applyUpgradeEffects();
+    updateScore();
+  </script>
+</body>
+</html>
