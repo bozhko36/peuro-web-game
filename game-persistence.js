@@ -1,6 +1,7 @@
 const SAVE_VERSION = 1;
 const MAX_UPGRADE_LEVEL = 50;
 const MAX_PRESTIGE_LEVEL = 5;
+const ABILITY_KEYS = ["golden", "autoCollector", "lucky", "business", "royal"];
 const DEFAULT_STATE = Object.freeze({
   slides: 0,
   playerLevel: 0,
@@ -11,7 +12,15 @@ const DEFAULT_STATE = Object.freeze({
     speed: 0,
     count: 0,
     mart: 0
-  })
+  }),
+  abilityState: Object.freeze(Object.fromEntries(ABILITY_KEYS.map((key) => [
+    key,
+    Object.freeze({
+      unlocked: false,
+      cooldownUntil: 0,
+      activeUntil: 0
+    })
+  ])))
 });
 
 function clampWholeNumber(value, options = {}) {
@@ -26,6 +35,18 @@ function sanitizeGameState(input) {
   const upgrades = source.upgradeLevels && typeof source.upgradeLevels === "object"
     ? source.upgradeLevels
     : {};
+  const abilities = source.abilityState && typeof source.abilityState === "object"
+    ? source.abilityState
+    : {};
+  const abilityState = {};
+  ABILITY_KEYS.forEach((key) => {
+    const ability = abilities[key] && typeof abilities[key] === "object" ? abilities[key] : {};
+    abilityState[key] = {
+      unlocked: ability.unlocked === true,
+      cooldownUntil: clampWholeNumber(ability.cooldownUntil),
+      activeUntil: clampWholeNumber(ability.activeUntil)
+    };
+  });
 
   return {
     slides: clampWholeNumber(source.slides),
@@ -37,7 +58,8 @@ function sanitizeGameState(input) {
       speed: clampWholeNumber(upgrades.speed, { max: MAX_UPGRADE_LEVEL }),
       count: clampWholeNumber(upgrades.count, { max: MAX_UPGRADE_LEVEL }),
       mart: clampWholeNumber(upgrades.mart, { max: MAX_UPGRADE_LEVEL })
-    }
+    },
+    abilityState
   };
 }
 

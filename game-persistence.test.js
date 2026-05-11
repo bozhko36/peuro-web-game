@@ -17,6 +17,13 @@ test("sanitizeGameState keeps valid saved values", () => {
       speed: 2,
       count: 4,
       mart: 5
+    },
+    abilityState: {
+      golden: { unlocked: true, cooldownUntil: 100, activeUntil: 50 },
+      autoCollector: { unlocked: true, cooldownUntil: 200, activeUntil: 0 },
+      lucky: { unlocked: true, cooldownUntil: 0, activeUntil: 0 },
+      business: { unlocked: false, cooldownUntil: 0, activeUntil: 300 },
+      royal: { unlocked: true, cooldownUntil: 400, activeUntil: 350 }
     }
   });
 
@@ -30,6 +37,13 @@ test("sanitizeGameState keeps valid saved values", () => {
       speed: 2,
       count: 4,
       mart: 5
+    },
+    abilityState: {
+      golden: { unlocked: true, cooldownUntil: 100, activeUntil: 50 },
+      autoCollector: { unlocked: true, cooldownUntil: 200, activeUntil: 0 },
+      lucky: { unlocked: true, cooldownUntil: 0, activeUntil: 0 },
+      business: { unlocked: false, cooldownUntil: 0, activeUntil: 300 },
+      royal: { unlocked: true, cooldownUntil: 400, activeUntil: 350 }
     }
   });
 });
@@ -45,6 +59,13 @@ test("sanitizeGameState falls back for invalid values", () => {
       speed: 88,
       count: -3,
       mart: 6.8
+    },
+    abilityState: {
+      golden: { unlocked: "yes", cooldownUntil: -1, activeUntil: Infinity },
+      autoCollector: null,
+      lucky: { unlocked: 1, cooldownUntil: "soon", activeUntil: 5.8 },
+      business: "bad",
+      royal: { unlocked: false, cooldownUntil: 900.9, activeUntil: -10 }
     }
   });
 
@@ -58,6 +79,13 @@ test("sanitizeGameState falls back for invalid values", () => {
       speed: 50,
       count: 0,
       mart: 6
+    },
+    abilityState: {
+      golden: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      autoCollector: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      lucky: { unlocked: false, cooldownUntil: 0, activeUntil: 5 },
+      business: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      royal: { unlocked: false, cooldownUntil: 900, activeUntil: 0 }
     }
   });
 });
@@ -73,6 +101,13 @@ test("serializeGameState wraps a versioned payload", () => {
       speed: 1,
       count: 2,
       mart: 4
+    },
+    abilityState: {
+      golden: { unlocked: true, cooldownUntil: 11, activeUntil: 22 },
+      autoCollector: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      lucky: { unlocked: true, cooldownUntil: 0, activeUntil: 0 },
+      business: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      royal: { unlocked: true, cooldownUntil: 33, activeUntil: 44 }
     }
   });
 
@@ -89,6 +124,13 @@ test("serializeGameState wraps a versioned payload", () => {
         speed: 1,
         count: 2,
         mart: 4
+      },
+      abilityState: {
+        golden: { unlocked: true, cooldownUntil: 11, activeUntil: 22 },
+        autoCollector: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+        lucky: { unlocked: true, cooldownUntil: 0, activeUntil: 0 },
+        business: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+        royal: { unlocked: true, cooldownUntil: 33, activeUntil: 44 }
       }
     }
   });

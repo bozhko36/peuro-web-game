@@ -584,6 +584,57 @@
       animation: coin-spark 720ms ease-out forwards;
     }
 
+    .stats-toggle {
+      position: absolute;
+      top: calc(env(safe-area-inset-top) + 16px);
+      right: 14px;
+      z-index: 18;
+      min-width: 66px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      padding: 0 13px;
+      color: var(--gold-1);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .stats-menu {
+      position: absolute;
+      top: calc(env(safe-area-inset-top) + 66px);
+      right: 14px;
+      z-index: 17;
+      width: min(236px, calc(100% - 28px));
+      border-radius: 24px;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+      transform-origin: top right;
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    .stats-menu.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .stats-title {
+      color: var(--gold-1);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
     .stats-strip {
       position: absolute;
       left: 50%;
@@ -600,6 +651,18 @@
       pointer-events: none;
     }
 
+    .stats-menu .stats-strip {
+      position: static;
+      width: 100%;
+      min-height: auto;
+      transform: none;
+      grid-template-columns: 1fr;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      pointer-events: auto;
+    }
+
     .stat-item {
       position: relative;
       display: grid;
@@ -612,6 +675,11 @@
 
     .stat-item + .stat-item {
       border-left: 1px solid rgba(255, 204, 51, 0.2);
+    }
+
+    .stats-menu .stat-item + .stat-item {
+      border-left: 0;
+      border-top: 1px solid rgba(255, 204, 51, 0.16);
     }
 
     .stat-icon {
@@ -648,6 +716,81 @@
       font-weight: 900;
       line-height: 1;
       white-space: nowrap;
+    }
+
+    .abilities-strip {
+      position: absolute;
+      left: 50%;
+      bottom: calc(var(--controls-top) + 12px);
+      z-index: 13;
+      width: min(calc(100% - 24px), 404px);
+      min-height: var(--stats-height);
+      transform: translateX(-50%);
+      border-radius: 22px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+      padding: 7px;
+      overflow: hidden;
+    }
+
+    .ability-button {
+      min-width: 0;
+      min-height: 48px;
+      border: 1px solid rgba(255, 204, 51, 0.34);
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 44%),
+        linear-gradient(180deg, rgba(16, 16, 16, 0.98) 0%, rgba(5, 5, 5, 0.98) 100%);
+      color: var(--text-main);
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      padding: 5px 3px;
+      cursor: pointer;
+      font: inherit;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .ability-icon {
+      color: var(--gold-1);
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .ability-name {
+      width: 100%;
+      color: var(--text-main);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ability-meta {
+      color: var(--gold-1);
+      font-size: 8px;
+      font-weight: 850;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .ability-button.locked,
+    .ability-button.cooldown {
+      opacity: 0.46;
+      cursor: default;
+      filter: grayscale(0.8);
+    }
+
+    .ability-button.active {
+      border-color: rgba(255, 204, 51, 0.88);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 0 18px rgba(255, 204, 51, 0.24);
     }
 
     .bill-art,
@@ -739,6 +882,8 @@
 
     .control-button:focus,
     .control-card:focus,
+    .stats-toggle:focus,
+    .ability-button:focus,
     .upgrade-tab:focus,
     .estate-card:focus,
     .slot-close:focus,
@@ -749,6 +894,8 @@
 
     .control-button:focus-visible,
     .control-card:focus-visible,
+    .stats-toggle:focus-visible,
+    .ability-button:focus-visible,
     .upgrade-tab:focus-visible,
     .estate-card:focus-visible,
     .slot-close:focus-visible,
@@ -806,8 +953,7 @@
 
     .upgrades-toggle[aria-expanded="true"]::after,
     .menu-toggle[aria-expanded="true"]::after,
-    .casino-toggle[aria-expanded="true"]::after,
-    .auto-toggle[aria-pressed="true"]::after {
+    .casino-toggle[aria-expanded="true"]::after {
       content: "";
       position: absolute;
       left: 22%;
@@ -1358,6 +1504,13 @@
       opacity: 0.7;
     }
 
+    .slot-bet-option span {
+      display: block;
+      font-size: clamp(11px, 3vw, 14px);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
     .slot-spin {
       min-height: 50px;
       border: 1px solid rgba(255, 204, 51, 0.72);
@@ -1651,6 +1804,52 @@
     </div>
 
     <!-- Top HUD -->
+    <button class="stats-toggle panel-surface" type="button" aria-expanded="false" aria-label="Open stats menu">Menu</button>
+
+    <aside class="stats-menu panel-surface" aria-label="Game stats">
+      <div class="stats-title">Stats</div>
+      <section class="stats-strip" aria-label="Idle game stats">
+        <div class="stat-item">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="9" cy="12" r="5"></circle>
+              <path d="M13 8c3.5.2 6 2 6 5s-2.5 4.8-6 5"></path>
+            </svg>
+          </span>
+          <span>
+            <span class="stat-label">Earn / Tap</span>
+            <span class="stat-value" data-stat="tap">€1.00</span>
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M4 15a8 8 0 0 1 16 0"></path>
+              <path d="M12 15l4-5"></path>
+              <path d="M6 19h12"></path>
+            </svg>
+          </span>
+          <span>
+            <span class="stat-label">Idle / Sec</span>
+            <span class="stat-value" data-stat="idle">€0.00</span>
+          </span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M4 18h16"></path>
+              <path d="M6 15l4-4 3 3 5-7"></path>
+              <path d="M15 7h3v3"></path>
+            </svg>
+          </span>
+          <span>
+            <span class="stat-label">Prestige</span>
+            <span class="stat-value" data-stat="prestige">x1.00</span>
+          </span>
+        </div>
+      </section>
+    </aside>
+
     <header class="hud">
       <div class="score panel-surface" aria-live="polite" aria-label="0 euro">
         <span class="score-flare" aria-hidden="true"></span>
@@ -1699,45 +1898,32 @@
       </div>
     </section>
 
-    <section class="stats-strip panel-surface" aria-label="Idle game stats">
-      <div class="stat-item">
-        <span class="stat-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <circle cx="9" cy="12" r="5"></circle>
-            <path d="M13 8c3.5.2 6 2 6 5s-2.5 4.8-6 5"></path>
-          </svg>
-        </span>
-        <span>
-          <span class="stat-label">Earn / Tap</span>
-          <span class="stat-value" data-stat="tap">€1.00</span>
-        </span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M4 15a8 8 0 0 1 16 0"></path>
-            <path d="M12 15l4-5"></path>
-            <path d="M6 19h12"></path>
-          </svg>
-        </span>
-        <span>
-          <span class="stat-label">Idle / Sec</span>
-          <span class="stat-value" data-stat="idle">€0.00</span>
-        </span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M4 18h16"></path>
-            <path d="M6 15l4-4 3 3 5-7"></path>
-            <path d="M15 7h3v3"></path>
-          </svg>
-        </span>
-        <span>
-          <span class="stat-label">Prestige</span>
-          <span class="stat-value" data-stat="prestige">x1.00</span>
-        </span>
-      </div>
+    <section class="abilities-strip panel-surface" aria-label="Abilities">
+      <button class="ability-button" type="button" data-ability="golden">
+        <span class="ability-icon">€</span>
+        <span class="ability-name">Golden</span>
+        <span class="ability-meta" data-ability-meta="golden">50k€</span>
+      </button>
+      <button class="ability-button" type="button" data-ability="autoCollector">
+        <span class="ability-icon">⏱</span>
+        <span class="ability-name">Collect</span>
+        <span class="ability-meta" data-ability-meta="autoCollector">250k€</span>
+      </button>
+      <button class="ability-button" type="button" data-ability="lucky">
+        <span class="ability-icon">×10</span>
+        <span class="ability-name">Lucky</span>
+        <span class="ability-meta" data-ability-meta="lucky">Lv 20</span>
+      </button>
+      <button class="ability-button" type="button" data-ability="business">
+        <span class="ability-icon">⌂</span>
+        <span class="ability-name">Rush</span>
+        <span class="ability-meta" data-ability-meta="business">Lv 50</span>
+      </button>
+      <button class="ability-button" type="button" data-ability="royal">
+        <span class="ability-icon">★</span>
+        <span class="ability-name">Royal</span>
+        <span class="ability-meta" data-ability-meta="royal">P1</span>
+      </button>
     </section>
 
     <!-- Floating controls -->
@@ -1838,9 +2024,9 @@
         <span class="slot-bet-label">Bet</span>
         <span class="slot-bet-value"><span id="slot-bet-value">100</span> euro</span>
         <div class="slot-bet-options" role="group" aria-label="Choose casino bet">
-          <button class="slot-bet-option selected" type="button" data-slot-bet="100" aria-pressed="true">100</button>
-          <button class="slot-bet-option" type="button" data-slot-bet="500" aria-pressed="false">500</button>
-          <button class="slot-bet-option" type="button" data-slot-bet="1000" aria-pressed="false">1000</button>
+          <button class="slot-bet-option selected" type="button" data-slot-bet="100" aria-pressed="true"><span>100</span></button>
+          <button class="slot-bet-option" type="button" data-slot-bet="500" aria-pressed="false"><span>500</span></button>
+          <button class="slot-bet-option" type="button" data-slot-bet="1000" aria-pressed="false"><span>1000</span></button>
         </div>
       </div>
       <button class="slot-spin" type="button">Spin</button>
@@ -1863,6 +2049,10 @@
     const tapStatValue = document.querySelector("[data-stat='tap']");
     const idleStatValue = document.querySelector("[data-stat='idle']");
     const prestigeStatValue = document.querySelector("[data-stat='prestige']");
+    const statsToggle = document.querySelector(".stats-toggle");
+    const statsMenu = document.querySelector(".stats-menu");
+    const abilityButtons = document.querySelectorAll("[data-ability]");
+    const abilityMetaValues = document.querySelectorAll("[data-ability-meta]");
     const upgradeBadge = document.querySelector("[data-badge='upgrades']");
     const estateBadge = document.querySelector("[data-badge='estate']");
     const casinoBadge = document.querySelector("[data-badge='casino']");
@@ -1902,6 +2092,48 @@
       count: 0,
       mart: 0
     };
+    const abilityState = {
+      golden: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      autoCollector: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      lucky: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      business: { unlocked: false, cooldownUntil: 0, activeUntil: 0 },
+      royal: { unlocked: false, cooldownUntil: 0, activeUntil: 0 }
+    };
+    const abilityConfigs = {
+      golden: {
+        label: "Golden Tap",
+        type: "euro",
+        cost: 50000,
+        duration: 60,
+        cooldown: 120
+      },
+      autoCollector: {
+        label: "Auto Collector",
+        type: "euro",
+        cost: 250000,
+        cooldown: 600
+      },
+      lucky: {
+        label: "Lucky Streak",
+        type: "level",
+        requirement: 20,
+        passive: true
+      },
+      business: {
+        label: "Business Rush",
+        type: "level",
+        requirement: 50,
+        duration: 60,
+        cooldown: 600
+      },
+      royal: {
+        label: "Royal Reset",
+        type: "prestige",
+        requirement: 1,
+        duration: 45,
+        cooldown: 1800
+      }
+    };
 
     let slides = 56;
     let playerLevel = 0;
@@ -1918,6 +2150,7 @@
     let streamStopTimer = null;
     let autoTimer = null;
     let passiveTimer = null;
+    let abilityTimer = null;
     let lastPassiveIncomeAt = Date.now();
     let isAnimating = false;
     let streamMode = false;
@@ -1925,6 +2158,7 @@
     let upgradesOpen = false;
     let slotOpen = false;
     let estateOpen = false;
+    let statsOpen = false;
     let slotSpinning = false;
     let selectedSlotBet = 100;
     let lastTouchEndAt = 0;
@@ -1944,7 +2178,8 @@
         swipeExp,
         successfulSwipes,
         prestigeLevel,
-        upgradeLevels: { ...upgradeLevels }
+        upgradeLevels: { ...upgradeLevels },
+        abilityState: structuredClone(abilityState)
       };
     }
 
@@ -1963,6 +2198,9 @@
       prestigeLevel = saved.prestigeLevel || 0;
       Object.keys(upgradeLevels).forEach((type) => {
         upgradeLevels[type] = saved.upgradeLevels[type] || 0;
+      });
+      Object.keys(abilityState).forEach((type) => {
+        Object.assign(abilityState[type], saved.abilityState[type]);
       });
     }
 
@@ -1994,11 +2232,29 @@
     }
 
     function getSwipeReward() {
-      return (1 + upgradeLevels.count) * getPrestigeMultiplier();
+      return Math.max(1, Math.round((1 + upgradeLevels.count) * getTapMultiplier()));
+    }
+
+    function isAbilityActive(type) {
+      return abilityState[type].activeUntil > Date.now();
+    }
+
+    function getTapMultiplier() {
+      let multiplier = getPrestigeMultiplier();
+      if (isAbilityActive("golden")) multiplier *= 3;
+      if (isAbilityActive("royal")) multiplier *= 5;
+      return multiplier;
+    }
+
+    function getIdleMultiplier() {
+      let multiplier = getPrestigeMultiplier();
+      if (isAbilityActive("business")) multiplier *= 2;
+      if (isAbilityActive("royal")) multiplier *= 5;
+      return multiplier;
     }
 
     function getPrestigeMultiplier() {
-      return 1 + prestigeLevel * 0.25;
+      return 1 + prestigeLevel * 0.35;
     }
 
     function formatMultiplier(value) {
@@ -2013,10 +2269,15 @@
       return `€${amount.toFixed(2)}`;
     }
 
+    function formatAbilityTime(ms) {
+      const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return minutes > 0 ? `${minutes}:${String(seconds).padStart(2, "0")}` : `${seconds}s`;
+    }
+
     function renderBalanceValue(value) {
-      slidesValue.textContent = Math.max(0, value).toLocaleString("en-US", {
-        maximumFractionDigits: 2
-      });
+      slidesValue.textContent = Math.max(0, Math.floor(value)).toLocaleString("en-US");
     }
 
     function animateBalanceTo(target) {
@@ -2049,8 +2310,86 @@
 
     function updateStatsStrip() {
       tapStatValue.textContent = formatStatEuro(getSwipeReward());
-      idleStatValue.textContent = formatStatEuro(upgradeLevels.mart * getPrestigeMultiplier());
+      idleStatValue.textContent = formatStatEuro(Math.round(upgradeLevels.mart * getIdleMultiplier()));
       prestigeStatValue.textContent = formatMultiplier(getPrestigeMultiplier());
+    }
+
+    function getAbilityUnlockText(type) {
+      const config = abilityConfigs[type];
+      if (config.type === "euro") return `${config.cost.toLocaleString("en-US")}€`;
+      if (config.type === "level") return `Lv ${config.requirement}`;
+      return `P${config.requirement}`;
+    }
+
+    function meetsAbilityRequirement(type) {
+      const config = abilityConfigs[type];
+      if (config.type === "euro") return slides >= config.cost;
+      if (config.type === "level") return playerLevel >= config.requirement;
+      return prestigeLevel >= config.requirement && getPrestigeMultiplier() > 1;
+    }
+
+    function updateAbilityUnlocks() {
+      Object.keys(abilityState).forEach((type) => {
+        if (!abilityState[type].unlocked && meetsAbilityRequirement(type)) {
+          abilityState[type].unlocked = true;
+        }
+      });
+    }
+
+    function isAbilityOnCooldown(type) {
+      return abilityState[type].cooldownUntil > Date.now();
+    }
+
+    function canUseAbility(type) {
+      updateAbilityUnlocks();
+      const state = abilityState[type];
+      if (!state.unlocked || isAbilityOnCooldown(type)) return false;
+      const config = abilityConfigs[type];
+      if (config.passive) return false;
+      if (config.type === "euro" && slides < config.cost) return false;
+      return true;
+    }
+
+    function renderAbilities() {
+      updateAbilityUnlocks();
+      updateStatsStrip();
+      const now = Date.now();
+      abilityMetaValues.forEach((value) => {
+        const type = value.dataset.abilityMeta;
+        const state = abilityState[type];
+        if (!state.unlocked) {
+          value.textContent = getAbilityUnlockText(type);
+          return;
+        }
+        if (state.activeUntil > now) {
+          value.textContent = formatAbilityTime(state.activeUntil - now);
+          return;
+        }
+        if (state.cooldownUntil > now) {
+          value.textContent = formatAbilityTime(state.cooldownUntil - now);
+          return;
+        }
+        value.textContent = abilityConfigs[type].passive ? "ON" : "Ready";
+      });
+
+      abilityButtons.forEach((button) => {
+        const type = button.dataset.ability;
+        const config = abilityConfigs[type];
+        const state = abilityState[type];
+        const active = state.activeUntil > now;
+        const cooldown = state.cooldownUntil > now;
+        const locked = !state.unlocked;
+        button.disabled = locked || cooldown || config.passive || (config.type === "euro" && slides < config.cost);
+        button.classList.toggle("locked", locked);
+        button.classList.toggle("cooldown", cooldown);
+        button.classList.toggle("active", active || (state.unlocked && config.passive));
+        button.setAttribute(
+          "aria-label",
+          locked
+            ? `${config.label} locked, requires ${getAbilityUnlockText(type)}`
+            : `${config.label} ${button.querySelector(".ability-meta").textContent}`
+        );
+      });
     }
 
     function setBadge(badge, value) {
@@ -2086,6 +2425,7 @@
       renderUpgradeLevels();
       updateSlotControls();
       updateStatsStrip();
+      renderAbilities();
     }
 
     function getExpNeeded() {
@@ -2124,8 +2464,21 @@
       return selectedSlotBet;
     }
 
+    function getSlotBetOptions() {
+      if (slides < 10000) return [100, 500, 1000];
+      const power = Math.floor(Math.log10(slides));
+      const middle = 10 ** power;
+      return [middle / 2, middle, middle * 2];
+    }
+
     function updateSlotControls() {
-      slotBetButtons.forEach((button) => {
+      const options = getSlotBetOptions();
+      if (!options.includes(selectedSlotBet)) selectedSlotBet = options[0];
+      slotBetButtons.forEach((button, index) => {
+        const option = options[index];
+        button.dataset.slotBet = String(option);
+        button.querySelector("span").textContent = option.toLocaleString("en-US");
+        button.setAttribute("aria-label", `${option.toLocaleString("en-US")} euro bet`);
         const amount = Number(button.dataset.slotBet);
         const selected = amount === selectedSlotBet;
         button.classList.toggle("selected", selected);
@@ -2161,6 +2514,7 @@
       if (slotOpen) {
         setUpgradesOpen(false);
         setEstateOpen(false);
+        setStatsOpen(false);
         updateSlotControls();
       }
     }
@@ -2173,6 +2527,7 @@
       if (estateOpen) {
         setUpgradesOpen(false);
         setSlotOpen(false);
+        setStatsOpen(false);
       }
     }
 
@@ -2210,7 +2565,15 @@
       const allMatch = result[0] === result[1] && result[1] === result[2];
       const pairMatch = result[0] === result[1] || result[1] === result[2] || result[0] === result[2];
       const jackpot = allMatch && result[0] === "jackpot";
-      const payout = jackpot ? bet * 10000 : allMatch ? bet * 6 : pairMatch ? bet * 2 : 0;
+      const pairPayout = 2;
+      const allMatchPayout = 6;
+      const payout = jackpot
+        ? bet * 10000
+        : allMatch
+          ? Math.round(bet * allMatchPayout)
+          : pairMatch
+            ? Math.round(bet * pairPayout)
+            : 0;
       if (payout > 0) {
         addEuros(payout);
         slotResult.textContent = jackpot
@@ -2230,6 +2593,11 @@
         playerLevel += 1;
       }
       updateExpBar();
+      renderAbilities();
+    }
+
+    function getManualSlideMultiplier() {
+      return abilityState.lucky.unlocked && Math.random() < 0.01 ? 10 : 1;
     }
 
     function crossedMultiple(before, after, step) {
@@ -2260,7 +2628,7 @@
       if (elapsedSeconds <= 0) return;
       lastPassiveIncomeAt += elapsedSeconds * 1000;
       if (upgradeLevels.mart <= 0) return;
-      addEuros(upgradeLevels.mart * elapsedSeconds * getPrestigeMultiplier());
+      addEuros(Math.round(upgradeLevels.mart * elapsedSeconds * getIdleMultiplier()));
     }
 
     function getSpeedMultiplier() {
@@ -2347,6 +2715,7 @@
       });
       updateStatsStrip();
       updateNavBadges();
+      renderAbilities();
     }
 
     function upgrade(type) {
@@ -2365,6 +2734,23 @@
       saveProgress();
     }
 
+    function useAbility(type) {
+      if (!canUseAbility(type)) return;
+      const config = abilityConfigs[type];
+      const state = abilityState[type];
+      if (config.type === "euro") spendEuros(config.cost);
+      const now = Date.now();
+      if (type === "autoCollector") {
+        addEuros(Math.round(upgradeLevels.mart * 300 * getIdleMultiplier()));
+      }
+      if (config.duration) state.activeUntil = now + config.duration * 1000;
+      if (config.cooldown) state.cooldownUntil = now + config.cooldown * 1000;
+      applyUpgradeEffects();
+      updateScore();
+      updateExpBar();
+      saveProgress();
+    }
+
     function prestige() {
       if (!canPrestige()) return;
       prestigeLevel += 1;
@@ -2372,7 +2758,14 @@
       playerLevel = 0;
       swipeExp = 0;
       successfulSwipes = 0;
-      upgradeLevels.mart = 0;
+      Object.keys(upgradeLevels).forEach((type) => {
+        upgradeLevels[type] = 0;
+      });
+      Object.keys(abilityState).forEach((type) => {
+        abilityState[type].unlocked = false;
+        abilityState[type].cooldownUntil = 0;
+        abilityState[type].activeUntil = 0;
+      });
       lastPassiveIncomeAt = Date.now();
       if (streamMode) stopMoneyStream();
       respawnNote();
@@ -2517,7 +2910,8 @@
       lastPointerX = null;
       lastPointerY = null;
       successfulSwipes += 1;
-      const swipeReward = getSwipeReward();
+      const manualMultiplier = autoMode ? 1 : getManualSlideMultiplier();
+      const swipeReward = getSwipeReward() * manualMultiplier;
       emitTapReward(swipeReward);
       addEuros(swipeReward);
       addSwipeExp(swipeReward);
@@ -2550,6 +2944,13 @@
       autoState.textContent = "OFF";
     }
 
+    function setStatsOpen(open) {
+      statsOpen = open;
+      statsMenu.classList.toggle("open", statsOpen);
+      statsToggle.setAttribute("aria-expanded", String(statsOpen));
+      statsToggle.setAttribute("aria-label", statsOpen ? "Close stats menu" : "Open stats menu");
+    }
+
     function setUpgradesOpen(open) {
       upgradesOpen = open;
       upgradesMenu.classList.toggle("open", upgradesOpen);
@@ -2558,6 +2959,7 @@
       if (upgradesOpen) {
         setSlotOpen(false);
         setEstateOpen(false);
+        setStatsOpen(false);
       }
     }
 
@@ -2595,7 +2997,7 @@
     }
 
     function isUiControlTarget(target) {
-      return target.closest(".upgrades, .estate-panel, .slot-panel, .auto-toggle, .upgrades-toggle, .casino-toggle, .menu-toggle");
+      return target.closest(".upgrades, .estate-panel, .slot-panel, .stats-menu, .stats-toggle, .abilities-strip, .auto-toggle, .upgrades-toggle, .casino-toggle, .menu-toggle");
     }
 
     function getExpandedUpgradeButtonAtPoint(event) {
@@ -2718,10 +3120,25 @@
       });
     });
 
+    abilityButtons.forEach((button) => {
+      button.addEventListener("pointerdown", (event) => {
+        event.stopPropagation();
+      });
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        useAbility(button.dataset.ability);
+      });
+    });
+
     autoToggle.addEventListener("click", (event) => {
       event.stopPropagation();
       if (autoMode) stopAutoSwipe();
       else startAutoSwipe();
+    });
+
+    statsToggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      setStatsOpen(!statsOpen);
     });
 
     upgradesToggle.addEventListener("click", (event) => {
@@ -2786,13 +3203,18 @@
       if (slotOpen && !slotPanel.contains(event.target) && !casinoToggle.contains(event.target)) {
         setSlotOpen(false);
       }
+      if (statsOpen && !statsMenu.contains(event.target) && !statsToggle.contains(event.target)) {
+        setStatsOpen(false);
+      }
     });
 
     passiveTimer = setInterval(runPassiveIncome, 1000);
+    abilityTimer = setInterval(renderAbilities, 1000);
     renderEstateLine();
     updateExpBar();
     applyUpgradeEffects();
     updateScore();
+    renderAbilities();
   </script>
 </body>
 </html>
