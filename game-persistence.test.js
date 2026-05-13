@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const {
+  readGameState,
   sanitizeGameState,
   serializeGameState
 } = require("./game-persistence.js");
@@ -134,4 +135,14 @@ test("serializeGameState wraps a versioned payload", () => {
       }
     }
   });
+});
+
+test("readGameState safely ignores blocked storage", () => {
+  const blockedStorage = {
+    getItem() {
+      throw new Error("Storage is blocked");
+    }
+  };
+
+  assert.equal(readGameState(blockedStorage, "save"), null);
 });

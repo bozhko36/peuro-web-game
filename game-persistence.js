@@ -85,7 +85,12 @@ function deserializeGameState(raw) {
 
 function readGameState(storage, key) {
   if (!storage || typeof storage.getItem !== "function") return null;
-  return deserializeGameState(storage.getItem(key));
+
+  try {
+    return deserializeGameState(storage.getItem(key));
+  } catch {
+    return null;
+  }
 }
 
 function writeGameState(storage, key, state) {
