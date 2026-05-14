@@ -1,8 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "name": "peuro-web-game",
-  "framework": null,
-  "installCommand": "",
-  "buildCommand": "",
-  "outputDirectory": "."
+  "framework": "nextjs"
 }

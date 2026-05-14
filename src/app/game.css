@@ -844,6 +844,7 @@
       left: 50%;
       top: 50%;
       width: calc(100% * 1731 / 909);
+      max-width: none;
       height: auto;
       transform: translate(-50%, -50%) rotate(90deg);
       transform-origin: center;
@@ -1336,7 +1337,7 @@
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 18%),
         linear-gradient(180deg, rgba(10, 18, 12, 0) 54%, rgba(16, 28, 12, 0.1) 74%, rgba(10, 18, 8, 0.28) 100%),
-        url("estate-strip-bg.svg");
+        url("/assets/estate-strip-bg.svg");
       background-size: auto, auto, cover;
       background-position: center, center, 82% center;
       background-repeat: no-repeat;
