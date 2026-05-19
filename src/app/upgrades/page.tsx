@@ -1,12 +1,13 @@
-import { BackgroundDecor } from "@/components/BackgroundDecor";
-import { BottomNav } from "@/components/BottomNav";
+import { GameScreen } from "@/components/GameScreen";
 import { UpgradeCard } from "@/components/UpgradeCard";
 import { Modal } from "@/components/Modal";
 
 export default function UpgradesPage() {
   return (
     <main className="stage mobile-shell">
-      <BackgroundDecor />
+      <div className="menu-backdrop" aria-hidden="true">
+        <GameScreen />
+      </div>
       <Modal title="Upgrades">
         <nav className="grid gap-3" aria-label="Upgrades">
           <UpgradeCard id="speed" name="Speed" />
@@ -14,7 +15,6 @@ export default function UpgradesPage() {
           <UpgradeCard id="prestige" name="Prestige" />
         </nav>
       </Modal>
-      <BottomNav />
     </main>
   );
 }

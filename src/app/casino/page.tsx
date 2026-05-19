@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BackgroundDecor } from "@/components/BackgroundDecor";
-import { BottomNav } from "@/components/BottomNav";
+import { GameScreen } from "@/components/GameScreen";
 import { CasinoButton } from "@/components/CasinoButton";
 import { Modal } from "@/components/Modal";
 import { JACKPOT_IMAGE } from "@/lib/constants";
@@ -29,7 +28,9 @@ export default function CasinoPage() {
 
   return (
     <main className="stage mobile-shell">
-      <BackgroundDecor />
+      <div className="menu-backdrop" aria-hidden="true">
+        <GameScreen />
+      </div>
       <Modal title="Casino">
         <div className="slot-reels" aria-live="polite">
           {(result?.symbols ?? ["🍒", "jackpot", "⭐"]).map((symbol, index) => (
@@ -57,7 +58,6 @@ export default function CasinoPage() {
           {result ? result.payout > 0 ? `Won ${result.payout.toLocaleString("en-US")} euro` : `Lost ${selectedCasinoBet.toLocaleString("en-US")} euro` : "Pick a bet and spin"}
         </div>
       </Modal>
-      <BottomNav />
     </main>
   );
 }

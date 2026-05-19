@@ -1,7 +1,6 @@
 "use client";
 
-import { BackgroundDecor } from "@/components/BackgroundDecor";
-import { BottomNav } from "@/components/BottomNav";
+import { GameScreen } from "@/components/GameScreen";
 import { Modal } from "@/components/Modal";
 import { formatMultiplier } from "@/lib/format";
 import { calculatePrestigeMultiplier, canPrestige } from "@/lib/prestige";
@@ -16,7 +15,9 @@ export default function PrestigePage() {
 
   return (
     <main className="stage mobile-shell">
-      <BackgroundDecor />
+      <div className="menu-backdrop" aria-hidden="true">
+        <GameScreen />
+      </div>
       <Modal title="Prestige">
         <p className="text-center text-sm text-[var(--muted)]">
           Reset money, level, upgrades, estate, and abilities for a permanent income bonus.
@@ -30,7 +31,6 @@ export default function PrestigePage() {
           {ready ? "Prestige" : `Reach Level ${PRESTIGE_LEVEL_REQUIREMENT}`}
         </button>
       </Modal>
-      <BottomNav />
     </main>
   );
 }
